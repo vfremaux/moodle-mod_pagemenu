@@ -1,4 +1,4 @@
-moodle-mod_page_menu
+moodle-mod_pagemenu
 ====================
 
 An internal menu for navigating within a flexpage course format 
