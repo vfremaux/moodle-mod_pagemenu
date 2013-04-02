@@ -22,14 +22,15 @@ class mod_pagemenu_link_module extends mod_pagemenu_link {
 
         require_once($CFG->dirroot.'/course/lib.php');
 
-		$modulenames = get_module_types_names();
-        $courseinfo = get_fast_modinfo($COURSE);
-        $allcms = $courseinfo->get_cms();
-        $modules = array();
-        foreach ($allcms as $cminfo) {
-            $instancename = format_string($cminfo->name);
+        get_all_mods($COURSE->id, $mods, $modnames, $modnamesplural, $modnamesusesd);
+        $modinfo = unserialize((string)$COURSE->modinfo);
 
-            $modules[$cminfo->id] = shorten_text($cminfo->modname.': '.$instancename, 28);
+        $modules = array();
+        foreach ($mods as $mod) {
+            $instancename = urldecode($modinfo[$mod->id]->name);
+            $instancename = format_string($instancename, true,  $COURSE->id);
+
+            $modules[$mod->id] = shorten_text($mod->modfullname.': '.$instancename, 28);
         }
         natcasesort($modules);
 
@@ -81,13 +82,13 @@ class mod_pagemenu_link_module extends mod_pagemenu_link {
                     $newid = backup_getid($restore->backup_unique_code, 'course_modules', $datum->value);
                     if (isset($newid->new_id)) {
                         $datum->value = $newid->new_id;
-                        $status = $DB->update_record('pagemenu_link_data', $datum);
+                        $status = update_record('pagemenu_link_data', $datum);
                     }
                     break;
                 default:
                     debugging('Deleting unknown data type: '.$datum->name);
                     // Not recognized
-                    $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
+                    delete_records('pagemenu_link_data', 'id', $datum->id);
                     break;
             }
         }

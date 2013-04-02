@@ -62,7 +62,7 @@ abstract class mod_pagemenu_link {
      * @return void
      **/
     public function __construct($link = NULL, $data = NULL) {
-        global $CFG, $DB;
+        global $CFG;
 
         // Get the last word in the classname
         $this->type = get_class($this);
@@ -70,8 +70,8 @@ abstract class mod_pagemenu_link {
         $this->type = end($this->type);
 
         if (is_int($link)) {
-            if (!$this->link = $DB->get_record('pagemenu_links', array('id' => $link))) {
-                print_error('errorlink', 'pagemenu');
+            if (!$this->link = get_record('pagemenu_links', 'id', $link)) {
+                error('Failed to get link');
             }
         } else if (is_object($link)) {
             $this->link = $link;
@@ -203,8 +203,6 @@ abstract class mod_pagemenu_link {
      * @return int
      **/
     public function save_data($linkid, $name, $value, $unique = false) {
-    	global $DB;
-    	
         $return = false;
 
         $data         = new stdClass;
@@ -215,18 +213,17 @@ abstract class mod_pagemenu_link {
         if ($unique) {
             $fieldname  = 'value';
             $fieldvalue = $data->value;
-			$id = $DB->get_field('pagemenu_link_data', 'id', array('linkid' => $linkid, 'name' => $name, $fieldname => $fieldvalue));
         } else {
-			$id = $DB->get_field('pagemenu_link_data', 'id', array('linkid' => $linkid, 'name' => $name));
+            $fieldname = $fieldvalue = '';
         }
 
-        if ($id) {
+        if ($id = get_field('pagemenu_link_data', 'id', 'linkid', $linkid, 'name', $name, $fieldname, $fieldvalue)) {
             $data->id = $id;
-            if ($DB->update_record('pagemenu_link_data', $data)) {
+            if (update_record('pagemenu_link_data', $data)) {
                 $return = $id;
             }
         } else {
-            $return = $DB->insert_record('pagemenu_link_data', $data);
+            $return = insert_record('pagemenu_link_data', $data);
         }
 
         return $return;
@@ -242,12 +239,10 @@ abstract class mod_pagemenu_link {
      * @return object
      **/
     protected function get_config($data) {
-    	global $DB;
-    	
         $config = new stdClass;
 
         if (!empty($this->link->id)) {
-            if ($data !== NULL or $data = $DB->get_records('pagemenu_link_data', array('linkid' => $this->link->id))) {
+            if ($data !== NULL or $data = get_records('pagemenu_link_data', 'linkid', $this->link->id)) {
 
                 foreach ($data as $datum) {
                     $config->{$datum->name} = $datum->value;

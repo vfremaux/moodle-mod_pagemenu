@@ -26,12 +26,12 @@ function xmldb_pagemenu_upgrade($oldversion=0) {
     if ($result && $oldversion < 2007091702) {
 
     /// Define field taborder to be added to pagemenu
-        $table = new xmldb_table('pagemenu');
-        $field = new xmldb_field('taborder');
-        $field->set_attributes(XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'useastab');
+        $table = new XMLDBTable('pagemenu');
+        $field = new XMLDBField('taborder');
+        $field->setAttributes(XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, null, '0', 'useastab');
 
     /// Launch add field taborder
-        $result = $result and $dbman->add_field($table, $field);
+        $result = $result and add_field($table, $field);
     }
 
     return $result;

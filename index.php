@@ -15,8 +15,8 @@ require_once($CFG->dirroot.'/mod/pagemenu/locallib.php');
 
 $id = required_param('id', PARAM_INT);   // course
 
-if (!$course = $DB->get_record('course', array('id' => $id))) {
-    print_error('invalidcourseid');
+if (!$course = get_record('course', 'id', $id)) {
+    error('Course ID is incorrect');
 }
 
 require_login($course->id);
@@ -27,15 +27,7 @@ add_to_log($course->id, 'pagemenu', 'view all', "index.php?id=$course->id", '');
 $strpagemenus = get_string('modulenameplural', 'pagemenu');
 $strpagemenu  = get_string('modulename', 'pagemenu');
 
-$url = $CFG->wwwroot.'/mod/pagemenu/index.php';
-$PAGE->set_url($url);
-$PAGE->set_title($strpagemenus);
-$PAGE->set_heading($strpagemenus);
-$PAGE->set_focuscontrol('');
-$PAGE->set_cacheable(true);
-$PAGE->set_button('');
-$PAGE->set_headingmenu(navmenu($course));
-echo $OUTPUT->header();
+print_header_simple($strpagemenus, $strpagemenus, build_navigation($strpagemenus), '', '', true, '', navmenu($course));
 
 if (!$pagemenus = get_all_instances_in_course('pagemenu', $course)) {
     notice("There are no pagemenus", "$CFG->wwwroot/course/view.php?id=$course->id");
@@ -59,7 +51,7 @@ foreach ($pagemenus as $pagemenu) {
     $name    = format_string($pagemenu->name);
     $url     = "$CFG->wwwroot/mod/pagemenu/view.php?id=$pagemenu->coursemodule";
     $class   = '';
-    $context = context_module::instance($pagemenu->coursemodule);
+    $context = get_context_instance(CONTEXT_MODULE, $pagemenu->coursemodule);
 
     if (!$pagemenu->visible) {
         // Show dimmed if the mod is hidden
@@ -99,8 +91,8 @@ if ($addheaders) {
 }
 
 if (!empty($table->data)) {
-    echo html_writer::table($table);
-    echo $OUTPUT->footer($course);
+    print_table($table);
+    print_footer($course);
 } else {
     notice("There are no pagemenus", "$CFG->wwwroot/course/view.php?id=$course->id");
 }

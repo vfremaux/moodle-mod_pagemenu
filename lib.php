@@ -3,32 +3,9 @@
  * Library of functions and constants for module pagemenu
  *
  * @author Mark Nielsen
- * @reauthor Valery Fremaux for Moodle 2
  * @version $Id: lib.php,v 1.3 2012-06-18 16:08:03 vf Exp $
  * @package pagemenu
  **/
-
-/**
- * List of features supported in pagemenu module
- * @param string $feature FEATURE_xx constant for requested feature
- * @return mixed True if module supports feature, false if not, null if doesn't know
- */
-function pagemenu_supports($feature) {
-    switch($feature) {
-        case FEATURE_MOD_ARCHETYPE:           return MOD_ARCHETYPE_OTHER;
-        case FEATURE_GROUPS:                  return false;
-        case FEATURE_GROUPINGS:               return false;
-        case FEATURE_GROUPMEMBERSONLY:        return false;
-        case FEATURE_MOD_INTRO:               return false;
-        case FEATURE_COMPLETION_TRACKS_VIEWS: return false;
-        case FEATURE_GRADE_HAS_GRADE:         return false;
-        case FEATURE_GRADE_OUTCOMES:          return false;
-        case FEATURE_BACKUP_MOODLE2:          return true;
-        case FEATURE_SHOW_DESCRIPTION:        return false;
-
-        default: return null;
-    }
-}
 
 /**
  * Given an object containing all the necessary data,
@@ -40,11 +17,10 @@ function pagemenu_supports($feature) {
  * @return int The id of the newly inserted pagemenu record
  **/
 function pagemenu_add_instance($pagemenu) {
-	global $DB;
-	
+
     pagemenu_process_settings($pagemenu);
 
-    return $DB->insert_record('pagemenu', $pagemenu);
+    return insert_record('pagemenu', $pagemenu);
 }
 
 /**
@@ -56,12 +32,11 @@ function pagemenu_add_instance($pagemenu) {
  * @return boolean Success/Fail
  **/
 function pagemenu_update_instance($pagemenu) {
-	global $DB;
-	
+
     pagemenu_process_settings($pagemenu);
     $pagemenu->id = $pagemenu->instance;
 
-    return $DB->update_record('pagemenu', $pagemenu);
+    return update_record('pagemenu', $pagemenu);
 }
 
 /**
@@ -73,21 +48,20 @@ function pagemenu_update_instance($pagemenu) {
  * @return boolean Success/Failure
  **/
 function pagemenu_delete_instance($id) {
-	global $DB;
-	
+
     $result = true;
 
-    if ($links = $DB->get_records('pagemenu_links', array('pagemenuid' => $id), '', 'id')) {
+    if ($links = get_records('pagemenu_links', 'pagemenuid', $id, '', 'id')) {
         $linkids = implode(',', array_keys($links));
 
-        $result = $DB->delete_records_select('pagemenu_link_data', "linkid IN($linkids)");
+        $result = delete_records_select('pagemenu_link_data', "linkid IN($linkids)");
 
         if ($result) {
-            $result = $DB->delete_records('pagemenu_links', array('pagemenuid' => $id));
+            $result = delete_records('pagemenu_links', 'pagemenuid', $id);
         }
     }
     if ($result) {
-        $result = $DB->delete_records('pagemenu', array('id' => $id));
+        $result = delete_records('pagemenu', 'id', $id);
     }
 
     return $result;
@@ -207,13 +181,6 @@ function pagemenu_scale_used ($pagemenuid,$scaleid) {
     //}
 
     return $return;
-}
-
-/**
- *
- **/
-function pagemenu_scale_used_anywhere($scaleid){
-	return false;
 }
 
 /**

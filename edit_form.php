@@ -40,7 +40,7 @@ class mod_pagemenu_edit_form extends moodleform {
             // Print add form for all link types
             foreach (pagemenu_get_link_classes() as $link) {
                 if ($link->is_enabled()) {
-                    $mform->addElement('header', 'link_'.$link->type, get_string($link->type.'s', 'pagemenu'));
+                    $mform->addElement('header', 'link_'.$link->type, '');  // No title
                     $link->edit_form_add($mform);
                 }
             }

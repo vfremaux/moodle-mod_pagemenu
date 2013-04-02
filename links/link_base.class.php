@@ -53,8 +53,8 @@ class link_base {
         $this->type = get_class($this);
 
         if (is_int($link)) {
-            if (!$this->link = $DB->get_record('pagemenu_links', array('id' => $link))) {
-                print_error('errorlink', 'pagemenu');
+            if (!$this->link = get_record('pagemenu_links', 'id', $link)) {
+                error('Failed to get link');
             }
         } else if (is_object($link)) {
             $this->link = $link;
@@ -89,7 +89,7 @@ class link_base {
      * @return void
      **/
     function edit_form_add(&$mform) {
-        print_error('errorimpl', 'pagemenu', 'edit_form_add()');
+        error('Must override this method');
     }
 
     /**
@@ -160,8 +160,6 @@ class link_base {
      * @return int
      **/
     function save_data($linkid, $name, $value, $unique = false) {
-    	global $DB;
-    	
         $return = false;
 
         $data         = new stdClass;
@@ -176,13 +174,13 @@ class link_base {
             $fieldname = $fieldvalue = '';
         }
 
-        if ($id = $DB->get_field('pagemenu_link_data', 'id', array('linkid' => $linkid, 'name' => $name, $fieldname => $fieldvalue))) {
+        if ($id = get_field('pagemenu_link_data', 'id', 'linkid', $linkid, 'name', $name, $fieldname, $fieldvalue)) {
             $data->id = $id;
-            if ($DB->update_record('pagemenu_link_data', $data)) {
+            if (update_record('pagemenu_link_data', $data)) {
                 $return = $id;
             }
         } else {
-            $return = $DB->insert_record('pagemenu_link_data', $data);
+            $return = insert_record('pagemenu_link_data', $data);
         }
 
         return $return;
@@ -196,11 +194,9 @@ class link_base {
      * @return object
      **/
     function get_data($linkid = NULL) {
-    	global $DB;
-    	
         if ($linkid === NULL) {
             if (empty($this->link->id)) {
-                print_error('errorlinkid', 'pagemenu');
+                error('No link ID');
             }
             $linkid = $this->link->id;
         }
@@ -209,7 +205,7 @@ class link_base {
         $data = new stdClass;
 
         foreach ($names as $name) {
-            $data->$name = $DB->get_field('pagemenu_link_data', 'value', array('linkid' => $linkid, 'name' => $name));
+            $data->$name = get_field('pagemenu_link_data', 'value', 'linkid', $linkid, 'name', $name);
         }
 
         return $data;
@@ -223,7 +219,7 @@ class link_base {
      * @return object
      **/
     function get_menuitem($editing = false, $yui = false) {
-        print_error('errorimpl', 'pagemenu', 'get_menuitem()');
+        error('Must override this method');
     }
 
     /**

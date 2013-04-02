@@ -22,14 +22,23 @@ class mod_pagemenu_mod_form extends moodleform_mod {
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
 
-        $mform->addElement('hidden', 'intro'); // intro mandatory fiedl is not used
-        $mform->addElement('hidden', 'introformat'); // introformat mandatory fiedl is not used
-
         $mform->addElement('checkbox', 'displayname', get_string('displayname', 'pagemenu'));
-        $mform->addHelpButton('displayname', 'displayname', 'pagemenu');
+        $mform->setHelpButton('displayname', array('displayname', get_string('displayname', 'pagemenu'), 'pagemenu'));
+
+		/*
+        $mform->addElement('checkbox', 'useastab', get_string('useastab', 'pagemenu'));
+        $mform->setHelpButton('useastab', array('useastab', get_string('useastab', 'pagemenu'), 'pagemenu'));
+
+        $mform->addElement('text', 'taborder', get_string('taborder', 'pagemenu'), array('size'=>'4'));
+        $mform->setDefault('taborder', 0);
+        $mform->setType('taborder', PARAM_INT);
+        $mform->addRule('taborder', null, 'required', null, 'client');
+        $mform->addRule('taborder', null, 'numeric', null, 'client');
+        $mform->setHelpButton('taborder', array('taborder', get_string('taborder', 'pagemenu'), 'pagemenu'));
+        */
 
     /// Standard mod elements
-        $features = new stdClass();
+        $features = new object();
         $features->groups = false;
         $features->idnumber = false;
         $features->gradecat = false;

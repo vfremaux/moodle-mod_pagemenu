@@ -50,11 +50,11 @@ class mod_pagemenu_link_link extends mod_pagemenu_link {
                     $content = $datum->value;
                     $result  = restore_decode_content_links_worker($content, $restore);
                     if ($result != $content) {
-                        $datum->value = $result;
+                        $datum->value = addslashes($result);
                         if (debugging() and !defined('RESTORE_SILENTLY')) {
                             echo '<br /><hr />'.s($content).'<br />changed to<br />'.s($result).'<hr /><br />';
                         }
-                        $linkurlstatus = $DB->update_record('pagemenu_link_data', $datum);
+                        $linkurlstatus = update_record('pagemenu_link_data', $datum);
                     } else {
                         $linkurlstatus = true;
                     }
@@ -62,7 +62,7 @@ class mod_pagemenu_link_link extends mod_pagemenu_link {
                 default:
                     debugging('Deleting unknown data type: '.$datum->name);
                     // Not recognized
-                    $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
+                    delete_records('pagemenu_link_data', 'id', $datum->id);
                     break;
             }
         }

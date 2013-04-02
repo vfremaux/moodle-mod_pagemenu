@@ -3,13 +3,11 @@
  * Link class definition
  *
  * @author Mark Nielsen
- * @reauthor Valery Fremaux (valery.fremaux@gmail.com)
  * @version $Id: page.class.php,v 1.2 2011-07-07 14:03:27 vf Exp $
  * @package pagemenu
  **/
 
 require_once($CFG->dirroot.'/course/format/page/lib.php');
-require_once($CFG->dirroot.'/course/format/page/page.class.php');
 
 /**
  * Link Class Definition - defines
@@ -33,7 +31,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
         global $COURSE;
 
         $pages = array();
-        if ($pages = course_page::get_all_pages($COURSE->id, 'flat')) {
+        if ($pages = page_get_all_pages($COURSE->id, 'flat')) {
             $options = array(0 => get_string('choose', 'pagemenu'));
             $options += $this->build_select_menu($pages);
 
@@ -46,13 +44,11 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
      * Needs to handle exludes
      **/
     protected function get_config($data) {
-    	global $DB;
-    	
         $config = new stdClass;
         $config->exclude = array();
 
         if (!empty($this->link->id)) {
-            if ($data !== NULL or $data = $DB->get_records('pagemenu_link_data', array('linkid' => $this->link->id))) {
+            if ($data !== NULL or $data = get_records('pagemenu_link_data', 'linkid', $this->link->id)) {
 
                 foreach ($data as $datum) {
                     if ($datum->name == 'exclude') {
@@ -81,10 +77,10 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             $this->save_data($linkid, 'exclude', $pageid, true);
             pagemenu_set_message(get_string('pagelinkhidden', 'pagemenu'), 'notifysuccess');
         } else if ($showhide == 'show') {
-            $DB->delete_records('pagemenu_link_data', array('linkid' => $linkid, 'name' => 'exclude', 'value' => $pageid));
+            delete_records('pagemenu_link_data', 'linkid', $linkid, 'name', 'exclude', 'value', $pageid);
             pagemenu_set_message(get_string('pagelinkvisible', 'pagemenu'), 'notifysuccess');
         } else {
-            print_error('errorshowhide', 'pagemenu');
+            error('Invalide showhid param');
         }
     }
 
@@ -92,7 +88,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
         if (empty($this->link->id) or empty($this->config->pageid)) {
             return false;
         }
-        if (!$page = course_page::get($this->config->pageid)) {
+        if (!$page = page_get($this->config->pageid)) {
             // Probably deleted :(
             return false;
         }
@@ -102,7 +98,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
         $this->yui     = $yui;
 
         // Load the page with child tree(s)
-        $page->get_children($page->id);
+        $page->children = page_get_children($page->id, 'nested', $page->courseid);
 
         // Generate menu item tree
         return $this->page_to_menuitem($page);
@@ -119,10 +115,10 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
      * @return string
      **/
     protected function page_to_menuitem($page) {
-        global $CFG, $OUTPUT;
+        global $CFG;
 
         $cm = get_coursemodule_from_instance('pagemenu', $this->link->pagemenuid);
-        if ($this->dont_display($page) && !has_capability('mod/pagemenu:viewhidden', context_module::instance($cm->id), NULL, false)) {
+        if ($this->dont_display($page) && !has_capability('mod/pagemenu:viewhidden', get_context_instance(CONTEXT_MODULE, $cm->id), NULL, false)) {
             return false;
         }
 
@@ -139,7 +135,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             }
             // WOOT - longest URL ever :P
             $widget = "<a href=\"$CFG->wwwroot/mod/pagemenu/edit.php?a={$this->link->pagemenuid}&amp;linkid={$this->link->id}&amp;linkaction=page&amp;pageid=$page->id&amp;showhide=$pix&amp;sesskey=".sesskey()."\"
-                       <img src=\"".$OUTPUT->pix_url("t/$pix")."\" alt=\"$alt\" /></a>&nbsp;";
+                       <img src=\"$CFG->pixpath/t/$pix.gif\" alt=\"$alt\" /></a>&nbsp;";
         } else if ($this->is_excluded($page)) {
             // Excluded
             return false;
@@ -147,29 +143,28 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
 
         // Build the menu item
         $menuitem         = $this->get_blank_menuitem();
-        $menuitem->title  = $page->get_name();
+        $menuitem->title  = page_get_name($page);
         $menuitem->pre    = $widget;
-        $menuitem->active = $this->is_current($page);
+        $menuitem->active = $this->is_current($page->id);
         $menuitem->class = ($this->dont_display($page)) ? 'dimmed' : '' ;
 
         if ($page->courseid == SITEID) {
-            $menuitem->url = "$CFG->wwwroot/index.php?page={$page->id}";
+            $menuitem->url = "$CFG->wwwroot/index.php?page=$page->id";
         } else {
-            $menuitem->url = "$CFG->wwwroot/course/view.php?id={$page->courseid}&amp;page={$page->id}";
+            $menuitem->url = "$CFG->wwwroot/course/view.php?id=$page->courseid&amp;page=$page->id";
         }
 
         // Deal with children, always a pain :P
-        $children = $page->get_children();
-        if (!empty($children) and !$this->is_excluded($page) and ($this->editing or $this->yui or $this->is_active($page))) {
+        if (!empty($page->children) and !$this->is_excluded($page) and ($this->editing or $this->yui or $this->is_active($page->id))) {
             // First, we have children
             // AND the current page is not excluded, so we can print children
             // AND we are either editing, printing yui menu or it is active (all reasons to print children)
-            $menuitem->childtree = $this->pages_to_menuitems($children);
+            $menuitem->childtree = $this->pages_to_menuitems($page->children);
         }
 
         // Determin if we display this as a active or inactive parent
         if (!empty($menuitem->childtree) and !$this->is_excluded($page)) {
-            if ($this->editing or $this->is_active($page)) {
+            if ($this->editing or $this->is_active($page->id)) {
                 $active = 'active';
             } else {
                 $active = 'inactive';
@@ -177,7 +172,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             $menuitem->class .= " parent $active";
 
             if (!$this->yui) {  // YUI has its own image
-                $menuitem->post = "&nbsp;<img class=\"$active\" src=\"".$OUTPUT->pix_url($active, 'pagemenu')."\" alt=\"".get_string($active, 'pagemenu').'" />';
+                $menuitem->post = "&nbsp;<img class=\"$active\" src=\"$CFG->modpixpath/pagemenu/pix/$active.gif\" alt=\"".get_string($active, 'pagemenu').'" />';
             }
         }
 
@@ -212,10 +207,12 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
      * @param int $pageid Page ID
      * @return boolean
      **/
-    protected function is_active($page = NULL) {
+    protected function is_active($pageid) {
+        global $COURSE;
+
         static $parents = NULL;
 
-        if ($this->is_current($page)) {
+        if ($this->is_current($pageid)) {
             // It is the current page
             $this->active = true;
             return true;
@@ -223,13 +220,13 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             // Not current page, see if this page is one
             // of the parents of an active child page
             if (!empty($this->currentpageid)) {
-                $parents = $page->get_parents();
+                $parents = page_get_parents($this->currentpageid, $COURSE->id);
             } else {
                 $parents = array();
             }
         }
 
-        if (in_array($page->id, array_keys($parents))) {
+        if (in_array($pageid, array_keys($parents))) {
             $this->active = true;
             return true;
         } else {
@@ -244,16 +241,16 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
      * @param int $pageid Page ID
      * @return boolean
      **/
-    protected function is_current(&$page) {
+    protected function is_current($pageid) {
         if ($this->currentpageid === NULL) {
-            if ($currentpage = course_page::get_current_page(0, false)) {
+            if ($currentpage = page_get_current_page(0, false)) {
                 $this->currentpageid = $currentpage->id;
             } else {
                 $this->currentpageid = 0;
             }
         }
 
-        if ($page->id == $this->currentpageid) {
+        if ($pageid == $this->currentpageid) {
             $this->active = true;
             return true;
         } else {
@@ -268,7 +265,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
      * @param object $page Page object
      * @return boolean
      **/
-    protected function is_excluded(&$page) {
+    protected function is_excluded($page) {
         return in_array($page->id, $this->config->exclude);
     }
 
@@ -283,8 +280,8 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
      * @param object $page Page object
      * @return boolean
      **/
-    protected function dont_display(&$page) {
-        if ($page->displaymenu && $page->is_visible()) {
+    protected function dont_display($page) {
+        if (DISP_MENU & $page->display and DISP_PUBLISH & $page->display) {
             return false;
         }
         return true;
@@ -299,6 +296,15 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
     public function is_enabled() {
         global $COURSE;
 
+		// PATCH : allow using other page based formats
+        page_import_types('course/format/page');
+        $PAGE = page_create_object(PAGE_COURSE_VIEW, $COURSE->id);
+
+        if (is_a($PAGE, 'format_page')){
+            return true;
+        }
+		// /PATCH
+
         return ($COURSE->format == 'page');
     }
 
@@ -309,26 +315,34 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
      * @return array
      **/
     protected function build_select_menu($pages) {
-    	global $COURSE;
-    	
         $options = array();
 
         foreach ($pages as $page) {
 
-            // Build the name string - first add white space
-            $depth = $page->get_page_depth();
+			// PATCH : allow some roles seing non visible pages
+            /* Allow binding non visible pages !!
             
-            $options[$page->id] = str_repeat('&nbsp;&nbsp;', $depth);
-            if ($depth > 0) {
+            if ($this->dont_display($page)) {
+                continue;
+            }
+            */
+			// /PATCH
+
+            // Build the name string - first add white space
+            $options[$page->id] = str_repeat('&nbsp;&nbsp;', $page->depth);
+            if ($page->depth > 0) {
                 // Add a hyphen before all child pages
                 $options[$page->id] .= '-&nbsp;';
             }
 
             // Add the actual name
-            $name = shorten_text($page->get_name($page), 45);
+            $name = page_get_name($page);
+			// PATCH : make name longer for convenience
+            $name = shorten_text($name, 45);
             if ($this->dont_display($page)) {
                 $name = '('.$name.')';
             }
+			// /PATCH
             $options[$page->id] .= $name;
 
             if (!empty($page->children)) {
@@ -338,13 +352,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
         return $options;
     }
 
-	/**
-	* Probably obsolete or to be written elsewhere
-	*
-	*/
     public static function restore_data($data, $restore) {
-    	global $DB;
-    	
         $status = false;
 
         foreach ($data as $datum) {
@@ -354,7 +362,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
                     $newid = backup_getid($restore->backup_unique_code, 'format_page', $datum->value);
                     if (isset($newid->new_id)) {
                         $datum->value = $newid->new_id;
-                        $status = $DB->update_record('pagemenu_link_data', $datum);
+                        $status = update_record('pagemenu_link_data', $datum);
                     }
                     break;
                 case 'exclude':
@@ -362,16 +370,16 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
                     $newid = backup_getid($restore->backup_unique_code, 'format_page', $datum->value);
                     if (isset($newid->new_id)) {
                         $datum->value = $newid->new_id;
-                        $status = $DB->update_record('pagemenu_link_data', $datum);
+                        $status = update_record('pagemenu_link_data', $datum);
                     } else {
                         // Failed, remove it
-                        $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
+                        delete_records('pagemenu_link_data', 'id', $datum->id);
                     }
                     break;
                 default:
                     debugging('Deleting unknown data type: '.$datum->name);
                     // Not recognized
-                    $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
+                    delete_records('pagemenu_link_data', 'id', $datum->id);
                     break;
             }
         }

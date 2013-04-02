@@ -15,14 +15,11 @@ $a  = optional_param('a', 0, PARAM_INT); // Instance ID
 
 list($cm, $course, $pagemenu) = pagemenu_get_basics($id, $a);
 
-require_login($course->id, true, $cm);
-require_capability('mod/pagemenu:view', context_module::instance($cm->id));
+require_login($course->id);
+require_capability('mod/pagemenu:view', get_context_instance(CONTEXT_MODULE, $cm->id));
 
 pagemenu_print_header($cm, $course, $pagemenu);
-echo $OUTPUT->box(pagemenu_build_menu($pagemenu->id), 'boxwidthnormal boxaligncenter');
-echo '<center>';
-echo $OUTPUT->single_button(new moodle_url('/course/view.php?id='.$course->id), get_string('backtocourse', 'pagemenu'));
-echo '</center>';
+print_box(pagemenu_build_menu($pagemenu->id), 'boxwidthnormal boxaligncenter');
+print_footer($course);
 
-echo $OUTPUT->footer($course);
-
+?>

@@ -9,15 +9,16 @@
 
 /// This file to be included so we can assume config.php has already been included.
 
-if (!defined('MOODLE_INTERNAL')) die('You cannot call this script in that way');
-
+if (empty($pagemenu)) {
+    error('You cannot call this script in that way');
+}
 if (!isset($currenttab)) {
     $currenttab = '';
 }
 if (!isset($cm)) {
     $cm = get_coursemodule_from_instance('pagemenu', $pagemenu->id);
 }
-if (has_capability('mod/pagemenu:manage', context_module::instance($cm->id))) {
+if (has_capability('mod/pagemenu:manage', get_context_instance(CONTEXT_MODULE, $cm->id))) {
     $tabs = $row = $inactive = array();
 
     $row[] = new tabobject('view', "$CFG->wwwroot/mod/pagemenu/view.php?id=$cm->id", get_string('view', 'pagemenu'));

@@ -31,19 +31,7 @@
 // For the core capabilities, the variable is $moodle_capabilities.
 
 
-$capabilities = array(
-
-    'mod/pagemenu:addinstance' => array(
-
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_MODULE,
-        'legacy' => array(
-            'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-            'coursecreator' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        )
-    ),
+$mod_pagemenu_capabilities = array(
 
     'mod/pagemenu:view' => array(
 
@@ -55,20 +43,25 @@ $capabilities = array(
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'coursecreator' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
+            'admin' => CAP_ALLOW
         )
     ),
 
+	// PATCH : allow some roles seing hidden pages
     'mod/pagemenu:viewhidden' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'legacy' => array(
+            'guest' => CAP_PREVENT,
+            'student' => CAP_PREVENT,
+            'teacher' => CAP_PREVENT,
             'editingteacher' => CAP_ALLOW,
             'coursecreator' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
+            'admin' => CAP_ALLOW
         )
     ),
+	// /PATCH
 
     'mod/pagemenu:manage' => array(
 
@@ -78,7 +71,7 @@ $capabilities = array(
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'coursecreator' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
+            'admin' => CAP_ALLOW
         )
     ),
 );
