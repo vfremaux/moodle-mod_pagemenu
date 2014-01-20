@@ -760,7 +760,11 @@ function pagemenu_a($menuitem, $yui = false) {
 
     $title = s($menuitem->title);
 
-    return "$menuitem->pre<a href=\"$menuitem->url\" title=\"$title\" onclick=\"this.target='_top'\" class=\"$menuitem->class\">$title</a>$menuitem->post";
+    if (empty($menuitem->disabled)){
+	    return "$menuitem->pre<a href=\"$menuitem->url\" title=\"$title\" onclick=\"this.target='_top'\" class=\"$menuitem->class\">$title</a>$menuitem->post";
+	} else {
+	    return "$menuitem->pre<span class=\"$menuitem->class\">$title</span>$menuitem->post";
+	}
 }
 
 /**
