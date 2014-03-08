@@ -722,12 +722,9 @@ function pagemenu_ul($html, $depth, $yui = false) {
  * @param boolean $yui Add extra HTML and classes to support YUI menu
  * @return string
  **/
-function pagemenu_li($html, $depth, $active, $first, $last, $yui = false) {
+function pagemenu_li($html, $depth, $first, $last, $yui = false) {
     $class = "menuitem depth$depth";
 
-    if ($active) {
-        $class .= ' current';
-    }
     if ($last) {
         $class .= ' lastmenuitem';
     }

@@ -7,11 +7,11 @@
  * - Allows authorized people to see hidden pages in menu as dimmed links
  **/
 
-$module->version  = 2014011700;  // The current module version (Date: YYYYMMDDXX)
+$module->version  = 2014030800;  // The current module version (Date: YYYYMMDDXX)
 $module->requires = 2012120300;  // Requires this Moodle version
 $module->component = 'mod_pagemenu';  // Name of component
 $module->cron     = 0;           // Period for cron to check this module (secs)
 $module->maturity = MATURITY_BETA;
-$module->release = "2.5.0 (Build 2014011700)";
+$module->release = "2.5.0 (Build 2014030800)";
 $module->dependancies = array('format_page' => 2013012900);
 

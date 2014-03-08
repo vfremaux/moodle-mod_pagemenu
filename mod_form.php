@@ -23,7 +23,9 @@ class mod_pagemenu_mod_form extends moodleform_mod {
         $mform->addRule('name', null, 'required', null, 'client');
 
         $mform->addElement('hidden', 'intro'); // intro mandatory fiedl is not used
+        $mform->setType('intro', PARAM_TEXT);
         $mform->addElement('hidden', 'introformat'); // introformat mandatory fiedl is not used
+        $mform->setType('introformat', PARAM_INT);
 
         $mform->addElement('checkbox', 'displayname', get_string('displayname', 'pagemenu'));
         $mform->addHelpButton('displayname', 'displayname', 'pagemenu');
