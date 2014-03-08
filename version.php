@@ -13,5 +13,5 @@ $module->component = 'mod_pagemenu';  // Name of component
 $module->cron     = 0;           // Period for cron to check this module (secs)
 $module->maturity = MATURITY_BETA;
 $module->release = "2.4.0 (Build 2013021600)";
-$module->dependancies = array('format_page' => 2013020702);
+$module->dependencies = array('format_page' => 2013020702);
 
