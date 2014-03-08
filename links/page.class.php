@@ -102,7 +102,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
         $this->yui     = $yui;
 
         // Load the page with child tree(s)
-        $page->get_children($page->id);
+        $page->get_children();
 
         // Generate menu item tree
         return $this->page_to_menuitem($page);
@@ -151,6 +151,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
         $menuitem->pre    = $widget;
         $menuitem->active = $this->is_current($page);
         $menuitem->class = ($this->dont_display($page)) ? 'dimmed' : '' ;
+        $menuitem->disabled = !$page->check_activity_lock();
 
         if ($page->courseid == SITEID) {
             $menuitem->url = "$CFG->wwwroot/index.php?page={$page->id}";
@@ -166,7 +167,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             // AND we are either editing, printing yui menu or it is active (all reasons to print children)
             $menuitem->childtree = $this->pages_to_menuitems($children);
         }
-
+        
         // Determin if we display this as a active or inactive parent
         if (!empty($menuitem->childtree) and !$this->is_excluded($page)) {
             if ($this->editing or $this->is_active($page)) {

@@ -1,11 +1,12 @@
-<?php  // $Id: mod_form.php,v 1.3 2012-06-18 16:08:03 vf Exp $
+<?php 
 /**
  * Form to define a new instance of this module or edit an 
  * existing instance.  It is used from /course/modedit.php.
  *
- * @version $Id: mod_form.php,v 1.3 2012-06-18 16:08:03 vf Exp $
+ * @version
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package pagemenu
+ * @author moodle 2.x valery.fremaux valery.fremaux@gmail.com
  **/
 
 require_once('moodleform_mod.php');
@@ -23,7 +24,9 @@ class mod_pagemenu_mod_form extends moodleform_mod {
         $mform->addRule('name', null, 'required', null, 'client');
 
         $mform->addElement('hidden', 'intro'); // intro mandatory fiedl is not used
+        $mform->setType('intro', PARAM_TEXT);
         $mform->addElement('hidden', 'introformat'); // introformat mandatory fiedl is not used
+        $mform->setType('introformat', PARAM_INT);
 
         $mform->addElement('checkbox', 'displayname', get_string('displayname', 'pagemenu'));
         $mform->addHelpButton('displayname', 'displayname', 'pagemenu');

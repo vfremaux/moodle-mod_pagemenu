@@ -3,7 +3,8 @@
  * Pagemenu's Local Library
  *
  * @author Mark Nielsen
- * @version $Id: locallib.php,v 1.1 2010/03/03 15:30:09 vf Exp $
+ * @version
+ * @author Moodle 2.x valery.fremaux valery.fremaux@gmail.com
  * @package pagemenu
  **/
 
@@ -722,12 +723,9 @@ function pagemenu_ul($html, $depth, $yui = false) {
  * @param boolean $yui Add extra HTML and classes to support YUI menu
  * @return string
  **/
-function pagemenu_li($html, $depth, $active, $first, $last, $yui = false) {
+function pagemenu_li($html, $depth, $first, $last, $yui = false) {
     $class = "menuitem depth$depth";
 
-    if ($active) {
-        $class .= ' current';
-    }
     if ($last) {
         $class .= ' lastmenuitem';
     }
