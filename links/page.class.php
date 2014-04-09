@@ -103,7 +103,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
 
         // Load the page with child tree(s)
         $page->get_children();
-
+        
         // Generate menu item tree
         return $this->page_to_menuitem($page);
     }

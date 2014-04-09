@@ -2,8 +2,7 @@
 /**
  * Pagemenu's Local Library
  *
- * @author Mark Nielsen
- * @reauthor Moodle 2 Valery Fremaux (valery.fremaux@gmail.com)
+ * @author Moodle 2 Valery Fremaux (valery.fremaux@gmail.com) from code of Mark Nielsen
  * @version Moodle 2.x
  * @package pagemenu
  **/
@@ -447,10 +446,11 @@ function pagemenu_build_menu($pagemenuid, $editing = false, $yui = false, $menui
             if ($link->active) {
                 $info->active = true;
             }
+            
             if ($menuitem) {
                 $info->menuitems[] = $menuitem;
             }
-
+            
             if ($editing) {
                 if (!$menuitem) {
                     $html = get_string('linkitemerror', 'pagemenu');
