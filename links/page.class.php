@@ -1,4 +1,21 @@
 <?php
+// This file keeps track of upgrades to 
+// this module
+//
+// Sometimes, changes between versions involve
+// alterations to database structures and other
+// major things that may break installations.
+//
+// The upgrade function in this file will attempt
+// to perform all the necessary actions to upgrade
+// your older installtion to the current version.
+//
+// If there's something it cannot do itself, it
+// will tell you what you need to do.
+//
+// The commands in here will all be database-neutral,
+// using the functions defined in lib/ddllib.php
+
 /**
  * Link class definition
  *
@@ -22,8 +39,8 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
      * Current Page ID
      *
      * @var int
-     **/
-    protected $currentpageid = NULL;
+     */
+    protected $currentpageid = null;
 
     public function get_data_names() {
         return array('pageid');
@@ -46,13 +63,13 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
      * Needs to handle exludes
      **/
     protected function get_config($data) {
-    	global $DB;
-    	
+        global $DB;
+
         $config = new stdClass;
         $config->exclude = array();
 
         if (!empty($this->link->id)) {
-            if ($data !== NULL or $data = $DB->get_records('pagemenu_link_data', array('linkid' => $this->link->id))) {
+            if ($data !== null or $data = $DB->get_records('pagemenu_link_data', array('linkid' => $this->link->id))) {
 
                 foreach ($data as $datum) {
                     if ($datum->name == 'exclude') {
@@ -97,14 +114,14 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             return false;
         }
 
-        // Set editing to avoid passing it everywhere
+        // Set editing to avoid passing it everywhere.
         $this->editing = $editing;
         $this->yui     = $yui;
 
-        // Load the page with child tree(s)
+        // Load the page with child tree(s).
         $page->get_children();
 
-        // Generate menu item tree
+        // Generate menu item tree.
         return $this->page_to_menuitem($page);
     }
 
@@ -129,7 +146,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
         $widget = '';
 
         if ($this->editing and $page->id != $this->config->pageid) {
-            // Show hide/show widgets for children only
+            // Show hide/show widgets for children only.
             if ($this->is_excluded($page)) {
                 $pix = 'show';
                 $alt = get_string('show');
@@ -140,12 +157,12 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             // WOOT - longest URL ever :P
             $widget = "<a href=\"$CFG->wwwroot/mod/pagemenu/edit.php?a={$this->link->pagemenuid}&amp;linkid={$this->link->id}&amp;linkaction=page&amp;pageid=$page->id&amp;showhide=$pix&amp;sesskey=".sesskey()."\"
                        <img src=\"".$OUTPUT->pix_url("t/$pix")."\" alt=\"$alt\" /></a>&nbsp;";
-        } else if ($this->is_excluded($page)) {
+        } elseif ($this->is_excluded($page)) {
             // Excluded
             return false;
         }
 
-        // Build the menu item
+        // Build the menu item.
         $menuitem         = $this->get_blank_menuitem();
         $menuitem->title  = $page->get_name();
         $menuitem->pre    = $widget;
@@ -168,7 +185,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             $menuitem->childtree = $this->pages_to_menuitems($children);
         }
         
-        // Determin if we display this as a active or inactive parent
+        // Determin if we display this as a active or inactive parent.
         if (!empty($menuitem->childtree) and !$this->is_excluded($page)) {
             if ($this->editing or $this->is_active($page)) {
                 $active = 'active';
@@ -177,7 +194,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             }
             $menuitem->class .= " parent $active";
 
-            if (!$this->yui) {  // YUI has its own image
+            if (!$this->yui) {  // YUI has its own image.
                 $menuitem->post = "&nbsp;<img class=\"$active\" src=\"".$OUTPUT->pix_url($active, 'pagemenu')."\" alt=\"".get_string($active, 'pagemenu').'" />';
             }
         }
@@ -213,16 +230,15 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
      * @param int $pageid Page ID
      * @return boolean
      **/
-    protected function is_active($page = NULL) {
-        static $parents = NULL;
+    protected function is_active($page = null) {
+        static $parents = null;
 
         if ($this->is_current($page)) {
-            // It is the current page
+            // It is the current page.
             $this->active = true;
             return true;
-        } else if ($parents === NULL) {
-            // Not current page, see if this page is one
-            // of the parents of an active child page
+        } else if ($parents === null) {
+            // Not current page, see if this page is one of the parents of an active child page
             if (!empty($this->currentpageid)) {
                 $parents = $page->get_parents();
             } else {
@@ -244,9 +260,9 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
      *
      * @param int $pageid Page ID
      * @return boolean
-     **/
+     */
     protected function is_current(&$page) {
-        if ($this->currentpageid === NULL) {
+        if ($this->currentpageid === null) {
             if ($currentpage = course_page::get_current_page(0, false)) {
                 $this->currentpageid = $currentpage->id;
             } else {
@@ -310,8 +326,8 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
      * @return array
      **/
     protected function build_select_menu($pages) {
-    	global $COURSE;
-    	
+        global $COURSE;
+        
         $options = array();
 
         foreach ($pages as $page) {
@@ -339,13 +355,13 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
         return $options;
     }
 
-	/**
-	* Probably obsolete or to be written elsewhere
-	*
-	*/
+    /**
+    * Probably obsolete or to be written elsewhere
+    *
+    */
     public static function restore_data($data, $restore) {
-    	global $DB;
-    	
+        global $DB;
+        
         $status = false;
 
         foreach ($data as $datum) {
@@ -359,13 +375,13 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
                     }
                     break;
                 case 'exclude':
-                    // Relink page ID - do not care about failures here
+                    // Relink page ID - do not care about failures here.
                     $newid = backup_getid($restore->backup_unique_code, 'format_page', $datum->value);
                     if (isset($newid->new_id)) {
                         $datum->value = $newid->new_id;
                         $status = $DB->update_record('pagemenu_link_data', $datum);
                     } else {
-                        // Failed, remove it
+                        // Failed, remove it.
                         $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
                     }
                     break;
@@ -380,5 +396,3 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
         return $status;
     }
 }
-
-?>

@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Link class definition
  *
@@ -203,8 +218,8 @@ abstract class mod_pagemenu_link {
      * @return int
      **/
     public function save_data($linkid, $name, $value, $unique = false) {
-    	global $DB;
-    	
+        global $DB;
+
         $return = false;
 
         $data         = new stdClass;
@@ -215,9 +230,9 @@ abstract class mod_pagemenu_link {
         if ($unique) {
             $fieldname  = 'value';
             $fieldvalue = $data->value;
-			$id = $DB->get_field('pagemenu_link_data', 'id', array('linkid' => $linkid, 'name' => $name, $fieldname => $fieldvalue));
+            $id = $DB->get_field('pagemenu_link_data', 'id', array('linkid' => $linkid, 'name' => $name, $fieldname => $fieldvalue));
         } else {
-			$id = $DB->get_field('pagemenu_link_data', 'id', array('linkid' => $linkid, 'name' => $name));
+            $id = $DB->get_field('pagemenu_link_data', 'id', array('linkid' => $linkid, 'name' => $name));
         }
 
         if ($id) {
@@ -242,8 +257,8 @@ abstract class mod_pagemenu_link {
      * @return object
      **/
     protected function get_config($data) {
-    	global $DB;
-    	
+        global $DB;
+
         $config = new stdClass;
 
         if (!empty($this->link->id)) {
@@ -292,7 +307,7 @@ abstract class mod_pagemenu_link {
      * @return mixed
      **/
     public function handle_action() {
-        // Nothing
+        // Nothing.
     }
 
     /**
@@ -333,4 +348,3 @@ abstract class mod_pagemenu_link {
         return true;
     }
 }
-?>

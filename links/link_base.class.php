@@ -1,4 +1,21 @@
 <?php
+// This file keeps track of upgrades to 
+// this module
+//
+// Sometimes, changes between versions involve
+// alterations to database structures and other
+// major things that may break installations.
+//
+// The upgrade function in this file will attempt
+// to perform all the necessary actions to upgrade
+// your older installtion to the current version.
+//
+// If there's something it cannot do itself, it
+// will tell you what you need to do.
+//
+// The commands in here will all be database-neutral,
+// using the functions defined in lib/ddllib.php
+
 /**
  * Link class definition
  *
@@ -17,28 +34,28 @@ class link_base {
      *
      * @var boolean
      **/
-    var $editing = false;
+    public $editing = false;
 
     /**
      * YUI support flag
      *
      * @var boolean
      **/
-    var $yui = false;
+    public $yui = false;
 
     /**
      * Is the link active
      *
      * @var boolean
      **/
-    var $active = false;
+    public $active = false;
 
     /**
      * PHP5 Constructor
      *
      * @return void
      **/
-    function __construct($link = NULL) {
+    public function __construct($link = NULL) {
         $this->link_base($link);
     }
 
@@ -47,7 +64,7 @@ class link_base {
      *
      * @return void
      **/
-    function link_base($link = NULL) {
+    public function link_base($link = NULL) {
         global $CFG;
 
         $this->type = get_class($this);
@@ -77,7 +94,7 @@ class link_base {
      *
      * @return string
      **/
-    function get_name() {
+    public function get_name() {
         return get_string($this->type, 'pagemenu');
     }
 
@@ -88,7 +105,7 @@ class link_base {
      * @param object $mform The Moodle Form Class
      * @return void
      **/
-    function edit_form_add(&$mform) {
+    public function edit_form_add(&$mform) {
         print_error('errorimpl', 'pagemenu', 'edit_form_add()');
     }
 
@@ -99,7 +116,7 @@ class link_base {
      * @param object $data Form data (cleaned)
      * @return mixed
      **/
-    function save($data) {
+    public function save($data) {
         $names = $this->get_data_names();
 
         $allset = true;
@@ -127,7 +144,7 @@ class link_base {
      * @param int $pagemenuid Instance ID
      * @return int
      **/
-    function add_new_link($pagemenuid) {
+    public function add_new_link($pagemenuid) {
         $link             = new stdClass;
         $link->type       = $this->type;
         $link->previd     = 0;
@@ -146,7 +163,7 @@ class link_base {
      *
      * @return array
      **/
-    function get_data_names() {
+    public function get_data_names() {
         return array();
     }
 
@@ -159,9 +176,9 @@ class link_base {
      * @param boolean $unique Is the name/value combination unique?
      * @return int
      **/
-    function save_data($linkid, $name, $value, $unique = false) {
-    	global $DB;
-    	
+    public function save_data($linkid, $name, $value, $unique = false) {
+        global $DB;
+
         $return = false;
 
         $data         = new stdClass;
@@ -196,8 +213,8 @@ class link_base {
      * @return object
      **/
     function get_data($linkid = NULL) {
-    	global $DB;
-    	
+        global $DB;
+
         if ($linkid === NULL) {
             if (empty($this->link->id)) {
                 print_error('errorlinkid', 'pagemenu');
@@ -294,4 +311,3 @@ class link_base {
         return true;
     }
 }
-?>

@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Index page, shows all instance
  * and alphabetic order and displays
@@ -13,7 +28,7 @@
 require_once('../../config.php');
 require_once($CFG->dirroot.'/mod/pagemenu/locallib.php');
 
-$id = required_param('id', PARAM_INT);   // course
+$id = required_param('id', PARAM_INT);   // Course ID.
 
 if (!$course = $DB->get_record('course', array('id' => $id))) {
     print_error('invalidcourseid');
@@ -23,7 +38,7 @@ require_login($course->id);
 
 add_to_log($course->id, 'pagemenu', 'view all', "index.php?id=$course->id", '');
 
-// Get all required strings
+// Get all required strings.
 $strpagemenus = get_string('modulenameplural', 'pagemenu');
 $strpagemenu  = get_string('modulename', 'pagemenu');
 
@@ -35,6 +50,7 @@ $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable(true);
 $PAGE->set_button('');
 $PAGE->set_headingmenu(navmenu($course));
+
 echo $OUTPUT->header();
 
 if (!$pagemenus = get_all_instances_in_course('pagemenu', $course)) {
@@ -42,7 +58,7 @@ if (!$pagemenus = get_all_instances_in_course('pagemenu', $course)) {
     die;
 }
 
-// Sort the instances by name
+// Sort the instances by name.
 $function = create_function('$a, $b', 'return strnatcasecmp($a->name, $b->name);');
 usort($pagemenus, $function);
 
@@ -86,10 +102,10 @@ foreach ($pagemenus as $pagemenu) {
 }
 
 if ($addheaders) {
-    // Has mod/pagemenu:manage in at least one of the instances, so show 3 columns instead of 1
+    // Has mod/pagemenu:manage in at least one of the instances, so show 3 columns instead of 1.
     $table->head = array_merge($table->head, array(get_string('displayname', 'pagemenu'), get_string('useastab', 'pagemenu'), get_string('taborder', 'pagemenu')));
 
-    // Add padding to those rows that the user does not have mod/pagemenu:manage cap
+    // Add padding to those rows that the user does not have mod/pagemenu:manage cap.
     $cols = count($table->head);
     foreach ($table->data as $key => $row) {
         if (count($row) < $cols) {
@@ -104,4 +120,3 @@ if (!empty($table->data)) {
 } else {
     notice("There are no pagemenus", "$CFG->wwwroot/course/view.php?id=$course->id");
 }
-?>
