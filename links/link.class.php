@@ -1,4 +1,21 @@
 <?php
+// This file keeps track of upgrades to 
+// this module
+//
+// Sometimes, changes between versions involve
+// alterations to database structures and other
+// major things that may break installations.
+//
+// The upgrade function in this file will attempt
+// to perform all the necessary actions to upgrade
+// your older installtion to the current version.
+//
+// If there's something it cannot do itself, it
+// will tell you what you need to do.
+//
+// The commands in here will all be database-neutral,
+// using the functions defined in lib/ddllib.php
+
 /**
  * Link class definition
  *
@@ -43,7 +60,7 @@ class mod_pagemenu_link_link extends mod_pagemenu_link {
         foreach ($data as $datum) {
             switch ($datum->name) {
                 case 'linkname':
-                    // We just want to know that it is there
+                    // We just want to know that it is there.
                     $linknamestatus = true;
                     break;
                 case 'linkurl':
@@ -61,7 +78,7 @@ class mod_pagemenu_link_link extends mod_pagemenu_link {
                     break;
                 default:
                     debugging('Deleting unknown data type: '.$datum->name);
-                    // Not recognized
+                    // Not recognized.
                     $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
                     break;
             }
@@ -70,4 +87,3 @@ class mod_pagemenu_link_link extends mod_pagemenu_link {
         return ($linkurlstatus and $linknamestatus);
     }
 }
-?>

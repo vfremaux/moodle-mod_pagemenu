@@ -1,4 +1,19 @@
-<?php  // $Id: lib.php,v 1.3 2012-06-18 16:08:03 vf Exp $
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Library of functions and constants for module pagemenu
  *
@@ -40,8 +55,8 @@ function pagemenu_supports($feature) {
  * @return int The id of the newly inserted pagemenu record
  **/
 function pagemenu_add_instance($pagemenu) {
-	global $DB;
-	
+    global $DB;
+    
     pagemenu_process_settings($pagemenu);
 
     return $DB->insert_record('pagemenu', $pagemenu);
@@ -56,8 +71,8 @@ function pagemenu_add_instance($pagemenu) {
  * @return boolean Success/Fail
  **/
 function pagemenu_update_instance($pagemenu) {
-	global $DB;
-	
+    global $DB;
+    
     pagemenu_process_settings($pagemenu);
     $pagemenu->id = $pagemenu->instance;
 
@@ -73,8 +88,8 @@ function pagemenu_update_instance($pagemenu) {
  * @return boolean Success/Failure
  **/
 function pagemenu_delete_instance($id) {
-	global $DB;
-	
+    global $DB;
+
     $result = true;
 
     if ($links = $DB->get_records('pagemenu_links', array('pagemenuid' => $id), '', 'id')) {
@@ -139,7 +154,7 @@ function pagemenu_print_recent_activity($course, $isteacher, $timestart) {
 
     $printed = false;
 
-    return $printed;  //  True if anything was printed, otherwise false
+    return $printed;  //  True if anything was printed, otherwise false.
 }
 
 /**
@@ -171,7 +186,7 @@ function pagemenu_cron () {
  * @return mixed Null or object with an array of grades and with the maximum grade
  **/
 function pagemenu_grades($pagemenuid) {
-   return NULL;
+   return null;
 }
 
 /**
@@ -200,20 +215,14 @@ function pagemenu_get_participants($pagemenuid) {
 function pagemenu_scale_used ($pagemenuid,$scaleid) {
     $return = false;
 
-    //$rec = get_record("pagemenu","id","$pagemenuid","scale","-$scaleid");
-    //
-    //if (!empty($rec)  && !empty($scaleid)) {
-    //    $return = true;
-    //}
-
     return $return;
 }
 
 /**
  *
  **/
-function pagemenu_scale_used_anywhere($scaleid){
-	return false;
+function pagemenu_scale_used_anywhere($scaleid) {
+    return false;
 }
 
 /**
@@ -236,5 +245,3 @@ function pagemenu_process_settings(&$pagemenu) {
     $pagemenu->timemodified = time();
     $pagemenu->taborder     = round(@$pagemenu->taborder, 0);
 }
-
-?>

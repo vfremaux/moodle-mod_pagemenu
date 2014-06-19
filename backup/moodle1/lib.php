@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -37,7 +36,6 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
 
     /** @var int cmid */
     protected $moduleid = null;
-
 
     /**
      * Declare the paths in moodle.xml we are able to convert
@@ -91,20 +89,21 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
      * data available
      */
     public function process_pagemenu($data) {
-        // get the course module id and context id
+
+        // Get the course module id and context id.
         $instanceid = $data['id'];
         $cminfo     = $this->get_cminfo($instanceid);
         $moduleid   = $cminfo['id'];
         $contextid  = $this->converter->get_contextid(CONTEXT_MODULE, $moduleid);
 
-        // get a fresh new file manager for this instance
+        // Get a fresh new file manager for this instance.
         $this->fileman = $this->converter->get_file_manager($contextid, 'mod_pagemenu');
 
-        // convert course files embedded into the intro
+        // Convert course files embedded into the intro.
         $data['intro'] = '';
         $data['introformat'] = FORMAT_MOODLE;
 
-        // write inforef.xml
+        // Write inforef.xml.
         $this->open_xml_writer("activities/pagemenu_{$moduleid}/inforef.xml");
         $this->xmlwriter->begin_tag('inforef');
         $this->xmlwriter->begin_tag('fileref');
@@ -115,7 +114,7 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
         $this->xmlwriter->end_tag('inforef');
         $this->close_xml_writer();
 
-        // write pagemenu.xml
+        // Write pagemenu.xml.
         $this->open_xml_writer("activities/pagemenu_{$moduleid}/pagemenu.xml");
         $this->xmlwriter->begin_tag('activity', array('id' => $instanceid, 'moduleid' => $moduleid,
             'modulename' => 'pagemenu', 'contextid' => $contextid));
@@ -136,21 +135,24 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
      */
     public function on_pagemenu_end() {
 
-        // finish writing pagemenu.xml
+        // Finish writing pagemenu.xml.
         $this->xmlwriter->end_tag('pagemenu');
         $this->xmlwriter->end_tag('activity');
         $this->close_xml_writer();
 
-        // write inforef.xml
+        // Write inforef.xml.
         $this->open_xml_writer("activities/pagemenu_{$this->moduleid}/inforef.xml");
         $this->xmlwriter->begin_tag('inforef');
         $this->xmlwriter->begin_tag('fileref');
+        foreach ($this->fileman->get_fileids() as $fileid) {
+            $this->write_xml('file', array('id' => $fileid));
+        }
         $this->xmlwriter->end_tag('fileref');
         $this->xmlwriter->end_tag('inforef');
         $this->close_xml_writer();
     }
 
-	/* Links */
+	/* LINKS */
     public function on_pagemenu_links_start() {
         $this->xmlwriter->begin_tag('links');
     }
@@ -159,7 +161,7 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
         $this->xmlwriter->end_tag('links');
     }
 
-	/* Link */
+    /* Link */
     public function on_pagemenu_link_start() {
         $this->xmlwriter->begin_tag('link');
     }
@@ -168,13 +170,13 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
         $this->xmlwriter->end_tag('link');
     }
 
-	// write link content
+    // Write link content.
     public function process_pagemenu_link($data) {
-		$this->write_xml('link', $data);
+        $this->write_xml('link', $data);
     }
 
-	/* Link datas */
-	/* ELEMENT ITEM */
+    /* Link datas */
+    /* ELEMENT ITEM */
     public function on_pagemenu_link_data_start() {
         $this->xmlwriter->begin_tag('data');
     }
@@ -183,9 +185,9 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
         $this->xmlwriter->end_tag('data');
     }
 
-	// process datum in one single write
-    public function process_pagemenu_link_datum($datum) {
-		$this->write_xml('datum', $datum);
+	// process link in one single write
+    public function process_pagemenu_datum($data) {
+        $this->write_xml('datum', array('id' => $data['id'], 'linkid' => $data['linkid'], 'name' => $data['name'], 'value' => $data['value']));
     }
 
 }

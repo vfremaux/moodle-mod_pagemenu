@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Pagemenu's Local Library
  *
@@ -40,10 +55,10 @@ function pagemenu_get_link_classes() {
  * @param int $cmid Course module ID
  * @param int $pagemenuid pagemenu module ID
  * @return array of objects
- **/
+ */
 function pagemenu_get_basics($cmid = 0, $pagemenuid = 0) {
-	global $DB;
-	
+    global $DB;
+
     if ($cmid) {
         if (!$cm = get_coursemodule_from_id('pagemenu', $cmid)) {
             print_error('invalidcoursemodule');
@@ -91,21 +106,21 @@ function pagemenu_print_header($cm, $course, $pagemenu, $currenttab = 'view', $f
 
     $strpagemenus = get_string('modulenameplural', 'pagemenu');
     $strpagemenu  = get_string('modulename', 'pagemenu');
-    $strname      = format_string($pagemenu->name);
+    $strname = format_string($pagemenu->name);
 
-/// Log it!
+// Log it!
     add_to_log($course->id, 'pagemenu', $currenttab, "$currenttab.php?id=$cm->id", $strname, $cm->id);
 
 
-/// Print header, heading, tabs and messages
-	$url = $CFG->wwwroot.'/mod/pagemenu/view.php?id='.$cm->id;
+// Print header, heading, tabs and messages.
+    $url = $CFG->wwwroot.'/mod/pagemenu/view.php?id='.$cm->id;
     $context = context_module::instance($cm->id);
     $PAGE->set_url($url);
     $PAGE->set_context($context);
     $PAGE->set_title($strname);
     $PAGE->set_heading($strname);
     $PAGE->set_cacheable(true);
-	$PAGE->set_pagetype('mod-pagemenu-view');
+    $PAGE->set_pagetype('mod-pagemenu-view');
     echo $OUTPUT->header();
 
     echo $OUTPUT->heading($strname);
@@ -121,7 +136,7 @@ function pagemenu_print_header($cm, $course, $pagemenu, $currenttab = 'view', $f
  * Prints the tabs for the module
  *
  * @return void
- **/
+ */
 function pagemenu_print_tabs($cm, $currenttab) {
     global $CFG;
 
@@ -140,7 +155,7 @@ function pagemenu_print_tabs($cm, $currenttab) {
 /**
  * pagemenu Message Functions
  *
- **/
+ */
 
 /**
  * Sets a message to be printed.  Messages are printed
@@ -151,7 +166,7 @@ function pagemenu_print_tabs($cm, $currenttab) {
  * @param string $class Class to be passed to {@link notify()}.  Usually notifyproblem or notifysuccess.
  * @param string $align Alignment of the message
  * @return boolean
- **/
+ */
 function pagemenu_set_message($message, $class="notifyproblem", $align='center') {
     global $SESSION;
 
@@ -173,12 +188,12 @@ function pagemenu_set_message($message, $class="notifyproblem", $align='center')
  *
  * @uses $SESSION
  * @return boolean
- **/
+ */
 function pagemenu_print_messages() {
     global $SESSION, $OUTPUT;
 
     if (empty($SESSION->messages)) {
-        // No messages to print
+        // No messages to print.
         return true;
     }
 
@@ -186,7 +201,7 @@ function pagemenu_print_messages() {
         echo $OUTPUT->notification($message[0], $message[1]);
     }
 
-    // Reset
+    // Reset.
     unset($SESSION->messages);
 
     return true;
@@ -195,16 +210,16 @@ function pagemenu_print_messages() {
 /**
  * Link Management Functions
  *
- **/
+ */
 
 /**
  * Gets the first link ID
  *
  * @param int $pagemenuid ID of a pagemenu instance
  * @return mixed
- **/
+ */
 function pagemenu_get_first_linkid($pagemenuid) {
-	global $DB;
+    global $DB;
 
     return $DB->get_field('pagemenu_links', 'id', array('pagemenuid' => $pagemenuid, 'previd' => 0));
 }
@@ -214,9 +229,9 @@ function pagemenu_get_first_linkid($pagemenuid) {
  *
  * @param int $pagemenuid ID of a pagemenu instance
  * @return mixed
- **/
+ */
 function pagemenu_get_last_linkid($pagemenuid) {
-	global $DB;
+    global $DB;
 
     return $DB->get_field('pagemenu_links', 'id', array('pagemenuid' => $pagemenuid, 'nextid' => 0));
 }
@@ -227,9 +242,9 @@ function pagemenu_get_last_linkid($pagemenuid) {
  * @param object $link A link ready for insert with previd/nextid set to 0
  * @param int $previd (Optional) If the last link ID is know, then pass it here  DO NOT PASS ANY OTHER ID!!!
  * @return object
- **/
+ */
 function pagemenu_append_link($link, $previd = NULL) {
-	global $DB;
+    global $DB;
 
     if ($previd !== NULL) {
         $link->previd = $previd;
@@ -237,13 +252,13 @@ function pagemenu_append_link($link, $previd = NULL) {
         // Add new one after
         $link->previd = $lastid;
     } else {
-        $link->previd = 0; // Just make sure
+        $link->previd = 0; // Just make sure.
     }
 
     if (!$link->id = $DB->insert_record('pagemenu_links', $link)) {
         print_error('errorlinkinsert', 'pagemenu');
     }
-    // Update the previous link to look to the new link
+    // Update the previous link to look to the new link.
     if ($link->previd) {
         if (!$DB->set_field('pagemenu_links', 'nextid', $link->id, array('id' => $link->previd))) {
             print_error('errorlinkorderupdate', 'pagemenu');
@@ -261,8 +276,8 @@ function pagemenu_append_link($link, $previd = NULL) {
  * @return boolean
  **/
 function pagemenu_delete_link($linkid) {
-	global $DB;
-	
+    global $DB;
+
     pagemenu_remove_link_from_ordering($linkid);
 
     if (!$DB->delete_records('pagemenu_link_data', array('linkid' => $linkid))) {
@@ -283,42 +298,42 @@ function pagemenu_delete_link($linkid) {
  * @return boolean
  **/
 function pagemenu_move_link($pagemenu, $linkid, $after) {
-	global $DB;
-	
+    global $DB;
+
     $link = new stdClass;
     $link->id = $linkid;
 
-    // Remove the link from where it was (Critical: this first!)
+    // Remove the link from where it was (Critical: this first!).
     pagemenu_remove_link_from_ordering($link->id);
 
     if ($after == 0) {
-        // Adding to front - get the first link
+        // Adding to front - get the first link.
         if (!$firstid = pagemenu_get_first_linkid($pagemenu->id)) {
             print_error('errorfirstlinkid', 'pagemenu');
         }
-        // Point the first link back to our new front link
+        // Point the first link back to our new front link.
         if (!$DB->set_field('pagemenu_links', 'previd', $link->id, array('id' => $firstid))) {
             print_error('errorlinkorderupdate', 'pagemenu');
         }
-        // Set prev/next
+        // Set prev/next.
         $link->nextid = $firstid;
         $link->previd = 0;
     } else {
-        // Get the after link
+        // Get the after link.
         if (!$after = $DB->get_record('pagemenu_links', array('id' => $after))) {
             print_error('errorlinkid', 'magemenu');
         }
-        // Point the after link to our new link
+        // Point the after link to our new link.
         if (!$DB->set_field('pagemenu_links', 'nextid', $link->id, array('id' => $after->id))) {
             print_error('errorlinkorderupdate', 'pagemenu');
         }
-        // Set the next link in the ordering to look back correctly
+        // Set the next link in the ordering to look back correctly.
         if ($after->nextid) {
             if (!$DB->set_field('pagemenu_links', 'previd', $link->id, array('id' => $after->nextid))) {
                 print_error('errorlinkorderupdate', 'pagemenu');
             }
         }
-        // Set next/prev
+        // Set next/prev.
         $link->previd = $after->id;
         $link->nextid = $after->nextid;
     }
@@ -337,18 +352,18 @@ function pagemenu_move_link($pagemenu, $linkid, $after) {
  * @return boolean
  **/
 function pagemenu_remove_link_from_ordering($linkid) {
-	global $DB;
-	
+    global $DB;
+
     if (!$link = $DB->get_record('pagemenu_links', array('id' => $linkid))) {
         print_error('errorlinkid', 'pagemenu');
     }
-    // Point the previous link to the one after this link
+    // Point the previous link to the one after this link.
     if ($link->previd) {
         if (!$DB->set_field('pagemenu_links', 'nextid', $link->nextid, array('id' => $link->previd))) {
             print_error('errorlinkorderupdate', 'pagemenu');
         }
     }
-    // Point the next link to the one before this link
+    // Point the next link to the one before this link.
     if ($link->nextid) {
         if (!$DB->set_field('pagemenu_links', 'previd', $link->previd, array('id' => $link->nextid))) {
             print_error('errorlinkorderupdate', 'pagemenu');
@@ -377,11 +392,11 @@ function pagemenu_build_menu($pagemenuid, $editing = false, $yui = false, $menui
     $info->menuitems = array();
     $info->active    = false;
 
-    // Set links if not already passed
+    // Set links if not already passed.
     if ($links === NULL) {
         $links = $DB->get_records('pagemenu_links', array('pagemenuid' => $pagemenuid));
     }
-    // Check passed array first, otherwise go to DB
+    // Check passed array first, otherwise go to DB.
     if (array_key_exists($pagemenuid, $firstlinkids)) {
         $linkid = $firstlinkids[$pagemenuid];
     } else {
@@ -390,7 +405,7 @@ function pagemenu_build_menu($pagemenuid, $editing = false, $yui = false, $menui
     
     if (!empty($links) and !empty($linkid)) {
 
-        // Get all link config data if we don't have it already
+        // Get all link config data if we don't have it already.
         if ($data === NULL) {
             $data = pagemenu_get_link_data($links);
         }
@@ -442,11 +457,11 @@ function pagemenu_build_menu($pagemenuid, $editing = false, $yui = false, $menui
             $link     = mod_pagemenu_link::factory($link->type, $link, $datum);
             $menuitem = $link->get_menuitem($editing, $yui);
 
-            // Update info
+            // Update info.
             if ($link->active) {
                 $info->active = true;
             }
-            
+
             if ($menuitem) {
                 $info->menuitems[] = $menuitem;
             }
@@ -480,9 +495,9 @@ function pagemenu_build_menu($pagemenuid, $editing = false, $yui = false, $menui
         if ($editing) {
             $info->html = html_writer::table($table, true);
         } else {
-        	$info->html = $OUTPUT->box_start();
+            $info->html = $OUTPUT->box_start();
             $info->html .= pagemenu_menuitems_to_html($info->menuitems, 0, $yui);
-        	$info->html .= $OUTPUT->box_end();
+            $info->html .= $OUTPUT->box_end();
         }
     } else {
         $info->html = $OUTPUT->box(get_string('nolinksinmenu', 'pagemenu'), 'generalbox boxaligncenter boxwidthnarrow centerpara', 'pagemenu-empty');
@@ -510,11 +525,11 @@ function pagemenu_build_menus($pagemenus, $yui = false, $menuinfo = false, $cour
         $courseid = $COURSE->id;
     }
 
-/// Filter out the menus that the user cannot see
+/// Filter out the menus that the user cannot see.
 
     $canviewhidden = has_capability('moodle/course:viewhiddenactivities', context_course::instance($courseid));
 
-    // Load all the context instances at once
+    // Load all the context instances at once.
     $instances = context_module::instance(array_keys($pagemenus));
 
     $pagemenuids = array();
@@ -529,7 +544,7 @@ function pagemenu_build_menus($pagemenus, $yui = false, $menuinfo = false, $cour
         return false;
     }
 
-/// Start fetching links and link data for ALL of the menus
+	// Start fetching links and link data for ALL of the menus.
     if (!$links = $DB->get_records_list('pagemenu_links', array('pagemenuid' => implode(',', $pagemenuids)))) {
         // None of the menus have links...
         return false;
@@ -537,8 +552,7 @@ function pagemenu_build_menus($pagemenus, $yui = false, $menuinfo = false, $cour
 
     $data = pagemenu_get_link_data($links);
 
-/// Find all the first link IDs - this avoids going to the db
-/// for each menu or looping through all links for each module
+	// Find all the first link IDs - this avoids going to the db for each menu or looping through all links for each module.
     $firstlinkids = array();
     foreach ($links as $link) {
         if ($link->previd == 0) {
@@ -562,23 +576,23 @@ function pagemenu_build_menus($pagemenus, $yui = false, $menuinfo = false, $cour
  * @return array
  **/
 function pagemenu_get_link_data($links) {
-	global $DB;
-	
+    global $DB;
+
     $organized = array();
+
+    if (!empty($links)) {
+        $idlist = implode(',', array_keys($links));
+        if ($data = $DB->get_records_select('pagemenu_link_data', " linkid IN ($idlist) ", array())) {
     
-    if (!empty($links)){
-    	$idlist = implode(',', array_keys($links));
-	    if ($data = $DB->get_records_select('pagemenu_link_data', " linkid IN ($idlist) ", array())) {
-	
-	        foreach ($data as $datum) {
-	            if (!array_key_exists($datum->linkid, $organized)) {
-	                $organized[$datum->linkid] = array();
-	            }
-	
-	            $organized[$datum->linkid][] = $datum;
-	        }
-	    }
-	}
+            foreach ($data as $datum) {
+                if (!array_key_exists($datum->linkid, $organized)) {
+                    $organized[$datum->linkid] = array();
+                }
+
+                $organized[$datum->linkid][] = $datum;
+            }
+        }
+    }
 
     return $organized;
 }
@@ -590,7 +604,7 @@ function pagemenu_get_link_data($links) {
  * @param string $action Action that is being performed
  * @return boolean If return true, then a redirect will occure (in edit.php at least)
  **/
-function pagemenu_handle_edit_action($pagemenu, $action = NULL) {
+function pagemenu_handle_edit_action($pagemenu, $action = null) {
     global $CFG;
 
     if (!confirm_sesskey()) {
@@ -599,7 +613,7 @@ function pagemenu_handle_edit_action($pagemenu, $action = NULL) {
 
     $linkid = required_param('linkid', PARAM_INT);
 
-    if ($action === NULL) {
+    if ($action === null) {
         $action = required_param('action', PARAM_ALPHA);
     }
 
@@ -641,9 +655,9 @@ function pagemenu_handle_edit_action($pagemenu, $action = NULL) {
  * @param int $depth Current depth for nesting lists
  * @param boolean $yui Add extra HTML and classes to support YUI menu
  * @return string
- **/
+ */
 function pagemenu_menuitems_to_html($menuitems, $depth = 0, $yui = false) {
-    // Don't return anything for empty menus
+    // Don't return anything for empty menus.
     if (empty($menuitems)) {
         return '';
     }
@@ -680,7 +694,7 @@ function pagemenu_menuitems_to_html($menuitems, $depth = 0, $yui = false) {
  * @param int $depth Current menu depth
  * @param boolean $yui Add extra HTML and classes to support YUI menu
  * @return string
- **/
+ */
 function pagemenu_ul($html, $depth, $yui = false) {
     if ($depth == 0) {
         $class = 'menutree';
@@ -722,7 +736,7 @@ function pagemenu_ul($html, $depth, $yui = false) {
  * @param boolean $last This is the last list item
  * @param boolean $yui Add extra HTML and classes to support YUI menu
  * @return string
- **/
+ */
 function pagemenu_li($html, $depth, $first, $last, $yui = false) {
     $class = "menuitem depth$depth";
 
@@ -745,7 +759,7 @@ function pagemenu_li($html, $depth, $first, $last, $yui = false) {
  * @param object $menuitem Menu item object
  * @param boolean $yui Add extra HTML and classes to support YUI menu
  * @return string
- **/
+ */
 function pagemenu_a($menuitem, $yui = false) {
     $menuitem->class .= ' menuitemlabel';
 
@@ -767,7 +781,7 @@ function pagemenu_a($menuitem, $yui = false) {
  * @param string $class A string of class names separated by spaces
  * @param string $prefix The prefix to attach
  * @return string
- **/
+ */
 function pagemenu_prefix_class_names($class, $prefix = 'yui') {
     $classnames = explode(' ', $class);
     $prefixed = array();
@@ -778,5 +792,3 @@ function pagemenu_prefix_class_names($class, $prefix = 'yui') {
 
     return $prefixed;
 }
-
-?>
