@@ -108,6 +108,24 @@ class restore_pagemenu_activity_structure_step extends restore_activity_structur
         // $this->set_mapping('pagemenu_link_data', $oldid, $newitemid, true);
     }
 
+	// We shall have to remap all nextid/previd of all generated links
+    protected function after_restore() {
+    	global $DB;
+    	
+    	if ($allmenus = $DB->get_records('pagemenu', array('course' => $this->get_courseid()))){
+    		foreach($allmenus as $menu){    	
+		    	if ($alllinks = $DB->get_records('pagemenu_links', array('pagemenuid' => $menu->id))){
+		    		foreach($alllinks as $link){
+		    			$link->previd = $this->get_mappingid('pagemenu_links', array('id' => $link->previd));
+		    			$link->nextid = $this->get_mappingid('pagemenu_links', array('id' => $link->nextid));
+		    			$DB->update_record('pagemenu_links', $link);
+		    		}
+		    	}
+		    }
+	    }
+    	    	
+    }
+
 
     protected function after_execute() {
     	

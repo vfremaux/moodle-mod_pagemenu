@@ -1,4 +1,21 @@
 <?php
+// This file keeps track of upgrades to 
+// this module
+//
+// Sometimes, changes between versions involve
+// alterations to database structures and other
+// major things that may break installations.
+//
+// The upgrade function in this file will attempt
+// to perform all the necessary actions to upgrade
+// your older installtion to the current version.
+//
+// If there's something it cannot do itself, it
+// will tell you what you need to do.
+//
+// The commands in here will all be database-neutral,
+// using the functions defined in lib/ddllib.php
+
 /**
  * Link class definition
  *
@@ -22,7 +39,7 @@ class mod_pagemenu_link_module extends mod_pagemenu_link {
 
         require_once($CFG->dirroot.'/course/lib.php');
 
-		$modulenames = get_module_types_names();
+        $modulenames = get_module_types_names();
         $courseinfo = get_fast_modinfo($COURSE);
         $allcms = $courseinfo->get_cms();
         $modules = array();
@@ -33,7 +50,7 @@ class mod_pagemenu_link_module extends mod_pagemenu_link {
         }
         natcasesort($modules);
 
-        // Add our choose option to the front
+        // Add our choose option to the front.
         $options = array(0 => get_string('choose', 'pagemenu')) + $modules;
 
         $mform->addElement('select', 'moduleid', get_string('addmodule', 'pagemenu'), $options);
@@ -77,7 +94,7 @@ class mod_pagemenu_link_module extends mod_pagemenu_link {
         foreach ($data as $datum) {
             switch ($datum->name) {
                 case 'moduleid':
-                    // Relink module ID
+                    // Relink module ID.
                     $newid = backup_getid($restore->backup_unique_code, 'course_modules', $datum->value);
                     if (isset($newid->new_id)) {
                         $datum->value = $newid->new_id;
@@ -95,5 +112,3 @@ class mod_pagemenu_link_module extends mod_pagemenu_link {
         return $status;
     }
 }
-
-?>

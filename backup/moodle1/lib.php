@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -38,7 +37,6 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
     /** @var int cmid */
     protected $moduleid = null;
 
-
     /**
      * Declare the paths in moodle.xml we are able to convert
      *
@@ -46,7 +44,7 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
      * For each path returned, the corresponding conversion method must be
      * defined.
      *
-     * Note that the path /MOODLE_BACKUP/COURSE/MODULES/MOD/TRACKER does not
+     * Note that the path /MOODLE_BACKUP/COURSE/MODULES/MOD/PAGEMENU does not
      * actually exist in the file. The last element with the module name was
      * appended by the moodle1_converter class.
      *
@@ -58,8 +56,8 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
                 'pagemenu', '/MOODLE_BACKUP/COURSE/MODULES/MOD/PAGEMENU',
                 array(
                     'newfields' => array(
-                        'intro',
-                        'introformat'
+                        'intro' => '',
+                        'introformat' => FORMAT_MOODLE,
                     ),
                 )
             ),
@@ -74,12 +72,12 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
                 )
             ),
             new convert_path(
-                'pagemenu_data', '/MOODLE_BACKUP/COURSE/MODULES/MOD/PAGEMENU/LINKS/LINK/DATA',
+                'pagemenu_link_data', '/MOODLE_BACKUP/COURSE/MODULES/MOD/PAGEMENU/LINKS/LINK/DATA',
                 array(
                 )
             ),
             new convert_path(
-                'pagemenu_datum', '/MOODLE_BACKUP/COURSE/MODULES/MOD/PAGEMENU/LINKS/LINK/DATA/DATUM',
+                'pagemenu_link_datum', '/MOODLE_BACKUP/COURSE/MODULES/MOD/PAGEMENU/LINKS/LINK/DATA/DATUM',
                 array(
                 )
             ),
@@ -87,25 +85,25 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
     }
 
     /**
-     * This is executed every time we have one /MOODLE_BACKUP/COURSE/MODULES/MOD/TRACKER
+     * This is executed every time we have one /MOODLE_BACKUP/COURSE/MODULES/MOD/PAGEMENU
      * data available
      */
     public function process_pagemenu($data) {
 
-        // get the course module id and context id
+        // Get the course module id and context id.
         $instanceid = $data['id'];
         $cminfo     = $this->get_cminfo($instanceid);
         $moduleid   = $cminfo['id'];
         $contextid  = $this->converter->get_contextid(CONTEXT_MODULE, $moduleid);
 
-        // get a fresh new file manager for this instance
+        // Get a fresh new file manager for this instance.
         $this->fileman = $this->converter->get_file_manager($contextid, 'mod_pagemenu');
 
-        // convert course files embedded into the intro
+        // Convert course files embedded into the intro.
         $data['intro'] = '';
         $data['introformat'] = FORMAT_MOODLE;
 
-        // write inforef.xml
+        // Write inforef.xml.
         $this->open_xml_writer("activities/pagemenu_{$moduleid}/inforef.xml");
         $this->xmlwriter->begin_tag('inforef');
         $this->xmlwriter->begin_tag('fileref');
@@ -116,8 +114,8 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
         $this->xmlwriter->end_tag('inforef');
         $this->close_xml_writer();
 
-        // write pagemenu.xml
-        $this->open_xml_writer("activities/pagemnu_{$moduleid}/pagemenu.xml");
+        // Write pagemenu.xml.
+        $this->open_xml_writer("activities/pagemenu_{$moduleid}/pagemenu.xml");
         $this->xmlwriter->begin_tag('activity', array('id' => $instanceid, 'moduleid' => $moduleid,
             'modulename' => 'pagemenu', 'contextid' => $contextid));
 
@@ -137,15 +135,12 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
      */
     public function on_pagemenu_end() {
 
-		// flush last pending tmp structure (issues)
-		$this->flushtmp();
-
-        // finish writing pagemenu.xml
+        // Finish writing pagemenu.xml.
         $this->xmlwriter->end_tag('pagemenu');
         $this->xmlwriter->end_tag('activity');
         $this->close_xml_writer();
 
-        // write inforef.xml
+        // Write inforef.xml.
         $this->open_xml_writer("activities/pagemenu_{$this->moduleid}/inforef.xml");
         $this->xmlwriter->begin_tag('inforef');
         $this->xmlwriter->begin_tag('fileref');
@@ -166,17 +161,27 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
         $this->xmlwriter->end_tag('links');
     }
 
-	// process link in one single write
-    public function process_pagemenu_link($data) {
-        $this->write_xml('link', array('id' => $data['id'], 'pagemenuid' => $data['pagemenuid'], 'previd' => $data['previd'], 'nextid' => $data['nextid'], 'type' => $data['type']));
+    /* Link */
+    public function on_pagemenu_link_start() {
+        $this->xmlwriter->begin_tag('link');
     }
 
-	/* LINKS */
-    public function on_pagemenu_data_start() {
+    public function on_pagemenu_link_end() {
+        $this->xmlwriter->end_tag('link');
+    }
+
+    // Write link content.
+    public function process_pagemenu_link($data) {
+        $this->write_xml('link', $data);
+    }
+
+    /* Link datas */
+    /* ELEMENT ITEM */
+    public function on_pagemenu_link_data_start() {
         $this->xmlwriter->begin_tag('data');
     }
 
-    public function on_pagemenu_data_end() {
+    public function on_pagemenu_link_data_end() {
         $this->xmlwriter->end_tag('data');
     }
 
