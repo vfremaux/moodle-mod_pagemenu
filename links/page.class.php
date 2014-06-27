@@ -185,7 +185,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             $menuitem->childtree = $this->pages_to_menuitems($children);
         }
         
-        // Determin if we display this as a active or inactive parent.
+        // Determine if we display this as a active or inactive parent.
         if (!empty($menuitem->childtree) and !$this->is_excluded($page)) {
             if ($this->editing or $this->is_active($page)) {
                 $active = 'active';

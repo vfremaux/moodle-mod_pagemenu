@@ -26,6 +26,7 @@
  * Get the base link class, almost always used
  **/
 require_once($CFG->dirroot.'/mod/pagemenu/link.class.php');
+require_once($CFG->dirroot.'/mod/pagemenu/classes/event/course_module_viewed.php');
 
 /**
  * Get link types
@@ -109,7 +110,17 @@ function pagemenu_print_header($cm, $course, $pagemenu, $currenttab = 'view', $f
     $strname = format_string($pagemenu->name);
 
 // Log it!
-    add_to_log($course->id, 'pagemenu', $currenttab, "$currenttab.php?id=$cm->id", $strname, $cm->id);
+    // add_to_log($course->id, 'pagemenu', $currenttab, "$currenttab.php?id=$cm->id", $strname, $cm->id);
+    $params = array(
+        'context' => context_module::instance($cm->id),
+        'objectid' => $pagemenu->id,
+        'other' => array('currenttab' => $currenttab)
+    );
+    $event = \mod_pagemenu\event\course_module_viewed::create($params);
+    $event->add_record_snapshot('course_modules', $cm);
+    $event->add_record_snapshot('course', $course);
+    $event->add_record_snapshot('pagemenu', $pagemenu);
+    $event->trigger();
 
 
 // Print header, heading, tabs and messages.
@@ -544,7 +555,7 @@ function pagemenu_build_menus($pagemenus, $yui = false, $menuinfo = false, $cour
         return false;
     }
 
-// Start fetching links and link data for ALL of the menus.
+	// Start fetching links and link data for ALL of the menus.
     if (!$links = $DB->get_records_list('pagemenu_links', array('pagemenuid' => implode(',', $pagemenuids)))) {
         // None of the menus have links...
         return false;
@@ -552,7 +563,7 @@ function pagemenu_build_menus($pagemenus, $yui = false, $menuinfo = false, $cour
 
     $data = pagemenu_get_link_data($links);
 
-// Find all the first link IDs - this avoids going to the db for each menu or looping through all links for each module.
+	// Find all the first link IDs - this avoids going to the db for each menu or looping through all links for each module.
     $firstlinkids = array();
     foreach ($links as $link) {
         if ($link->previd == 0) {

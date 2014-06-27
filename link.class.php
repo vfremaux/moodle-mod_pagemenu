@@ -279,14 +279,14 @@ abstract class mod_pagemenu_link {
      * @param boolean $editing Editing is turned on
      * @param boolean $yui Print with YUI Menu support
      * @return object
-     **/
+     */
     abstract public function get_menuitem($editing = false, $yui = false);
 
     /**
      * Returns a blank menu item
      *
      * @return object
-     **/
+     */
     protected function get_blank_menuitem() {
         $menuitem            = new stdClass;
         $menuitem->title     = '';
@@ -305,7 +305,7 @@ abstract class mod_pagemenu_link {
      * Handle them using this method.
      *
      * @return mixed
-     **/
+     */
     public function handle_action() {
         // Nothing.
     }
@@ -316,7 +316,7 @@ abstract class mod_pagemenu_link {
      *
      * @param string $url URL to test - see if it is the current page
      * @return boolean
-     **/
+     */
     protected function is_active($url = NULL) {
         if ($url === NULL) {
             return false;
@@ -332,7 +332,7 @@ abstract class mod_pagemenu_link {
      * Whether or not this link type is enabled
      *
      * @return boolean
-     **/
+     */
     public function is_enabled() {
         return true;
     }
@@ -343,7 +343,7 @@ abstract class mod_pagemenu_link {
      * @param array $data An array of pagemenu_link_data record objects
      * @param object $restore Restore object
      * @return boolean
-     **/
+     */
     public static function restore_data($link, $restore) {
         return true;
     }

@@ -24,7 +24,7 @@ function xmldb_pagemenu_upgrade($oldversion = 0) {
 
     if ($result && $oldversion < 2007091702) {
 
-    /// Define field taborder to be added to pagemenu
+    	// Define field taborder to be added to pagemenu.
         $table = new xmldb_table('pagemenu');
         $field = new xmldb_field('taborder');
         $field->set_attributes(XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'useastab');

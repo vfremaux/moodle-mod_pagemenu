@@ -135,7 +135,7 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
      */
     public function on_pagemenu_end() {
 
-        // Finish writing pagemenu.xml
+        // Finish writing pagemenu.xml.
         $this->xmlwriter->end_tag('pagemenu');
         $this->xmlwriter->end_tag('activity');
         $this->close_xml_writer();
