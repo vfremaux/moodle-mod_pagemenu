@@ -90,85 +90,6 @@ function pagemenu_get_basics($cmid = 0, $pagemenuid = 0) {
 }
 
 /**
- * Print the standard header for pagemenu module
- *
- * @uses $CFG
- * @uses $USER tabs.php requires it
- * @param object $cm Course module record object
- * @param object $course Couse record object
- * @param object $pagemenu pagemenu module record object
- * @param string $currenttab File location and tab to be selected
- * @param string $focus Focus
- * @param boolean $showtabs Display tabs yes/no
- * @return void
- **/
-function pagemenu_print_header($cm, $course, $pagemenu, $currenttab = 'view', $focus = '', $showtabs = true) {
-    global $CFG, $USER, $PAGE, $OUTPUT;
-
-    $strpagemenus = get_string('modulenameplural', 'pagemenu');
-    $strpagemenu  = get_string('modulename', 'pagemenu');
-    $strname = format_string($pagemenu->name);
-
-// Log it!
-    // add_to_log($course->id, 'pagemenu', $currenttab, "$currenttab.php?id=$cm->id", $strname, $cm->id);
-    $params = array(
-        'context' => context_module::instance($cm->id),
-        'objectid' => $pagemenu->id,
-        'other' => array('currenttab' => $currenttab)
-    );
-    $event = \mod_pagemenu\event\course_module_viewed::create($params);
-    $event->add_record_snapshot('course_modules', $cm);
-    $event->add_record_snapshot('course', $course);
-    $event->add_record_snapshot('pagemenu', $pagemenu);
-    $event->trigger();
-
-
-// Print header, heading, tabs and messages.
-    $url = $CFG->wwwroot.'/mod/pagemenu/view.php?id='.$cm->id;
-    $context = context_module::instance($cm->id);
-    $PAGE->set_url($url);
-    $PAGE->set_context($context);
-    $PAGE->set_title($strname);
-    $PAGE->set_heading($strname);
-    $PAGE->set_cacheable(true);
-    $PAGE->set_pagetype('mod-pagemenu-view');
-    echo $OUTPUT->header();
-
-    echo $OUTPUT->heading($strname);
-
-    if ($showtabs) {
-        pagemenu_print_tabs($cm, $currenttab);
-    }
-
-    pagemenu_print_messages();
-}
-
-/**
- * Prints the tabs for the module
- *
- * @return void
- */
-function pagemenu_print_tabs($cm, $currenttab) {
-    global $CFG;
-
-    if (has_capability('mod/pagemenu:manage', context_module::instance($cm->id))) {
-        $tabs = $row = $inactive = array();
-
-        $row[] = new tabobject('view', "$CFG->wwwroot/mod/pagemenu/view.php?id=$cm->id", get_string('view', 'pagemenu'));
-        $row[] = new tabobject('edit', "$CFG->wwwroot/mod/pagemenu/edit.php?id=$cm->id", get_string('edit', 'pagemenu'));
-
-        $tabs[] = $row;
-
-        print_tabs($tabs, $currenttab, $inactive);
-    }
-}
-
-/**
- * pagemenu Message Functions
- *
- */
-
-/**
  * Sets a message to be printed.  Messages are printed
  * by calling {@link pagemenu_print_messages()}.
  *
@@ -186,34 +107,6 @@ function pagemenu_set_message($message, $class="notifyproblem", $align='center')
     }
 
     $SESSION->messages[] = array($message, $class, $align);
-
-    return true;
-}
-
-/**
- * Print all set messages.
- *
- * See {@link pagemenu_set_message()} for setting messages.
- *
- * Uses {@link notify()} to print the messages.
- *
- * @uses $SESSION
- * @return boolean
- */
-function pagemenu_print_messages() {
-    global $SESSION, $OUTPUT;
-
-    if (empty($SESSION->messages)) {
-        // No messages to print.
-        return true;
-    }
-
-    foreach($SESSION->messages as $message) {
-        echo $OUTPUT->notification($message[0], $message[1]);
-    }
-
-    // Reset.
-    unset($SESSION->messages);
 
     return true;
 }
@@ -425,10 +318,12 @@ function pagemenu_build_menu($pagemenuid, $editing = false, $yui = false, $menui
             $action = optional_param('action', '', PARAM_ALPHA);
 
             if ($action == 'move') {
-                $moveid     = required_param('linkid', PARAM_INT);
-                $alt        = s(get_string('movehere'));
-                $movewidget = "<a title=\"$alt\" href=\"$CFG->wwwroot/mod/pagemenu/edit.php?a=$pagemenuid&action=movehere&linkid=$moveid&sesskey=".sesskey().'&after=%d">'.
-                              "<img src=\"".$OUTPUT->pix_url('movehere')."\" border=\"0\" alt=\"$alt\" /></a>";
+                $moveid = required_param('linkid', PARAM_INT);
+                $alt = get_string('movehere');
+                $params = array('a' => $pagemenuid, 'action' => 'movehere', 'linkid' => $moveid, 'sesskey' => sesskey(), 'after' => '%d');
+                $moveurl = new moodle_url('/mod/pagemenu/edit.php', $params);
+                $movewidget = '<a title="'.$alt.'" href="'.$moveurl.'">'.
+                              '<img src="'.$OUTPUT->pix_url('movehere').'" alt="'.$alt.'" /></a>';
                 $move = true;
             } else {
                 $move = false;
@@ -476,7 +371,7 @@ function pagemenu_build_menu($pagemenuid, $editing = false, $yui = false, $menui
             if ($menuitem) {
                 $info->menuitems[] = $menuitem;
             }
-            
+
             if ($editing) {
                 if (!$menuitem) {
                     $html = get_string('linkitemerror', 'pagemenu');
@@ -494,7 +389,9 @@ function pagemenu_build_menu($pagemenuid, $editing = false, $yui = false, $menui
                     foreach (array('move', 'edit', 'delete') as $widget) {
                         $alt = s(get_string($widget));
 
-                        $widgets[] = "<a title=\"$alt\" href=\"$CFG->wwwroot/mod/pagemenu/edit.php?a=$pagemenuid&amp;action=$widget&amp;linkid={$link->link->id}&amp;sesskey=".sesskey().'">'.
+                        $params = array('a' => $pagemenuid, 'action' => $widget, 'linkid' => $link->link->id, 'sesskey' => sesskey());
+                        $itemurl = new moodle_url('/mod/pagemenu/edit.php', $params);
+                        $widgets[] = '<a title="'.$alt.'" href="'.$itemurl.'">'.
                                      "<img src=\"".$OUTPUT->pix_url("t/$widget")."\" height=\"11\" width=\"11\" border=\"0\" alt=\"$alt\" /></a>";
                     }
 
@@ -555,7 +452,7 @@ function pagemenu_build_menus($pagemenus, $yui = false, $menuinfo = false, $cour
         return false;
     }
 
-	// Start fetching links and link data for ALL of the menus.
+    // Start fetching links and link data for ALL of the menus.
     if (!$links = $DB->get_records_list('pagemenu_links', array('pagemenuid' => implode(',', $pagemenuids)))) {
         // None of the menus have links...
         return false;
@@ -563,7 +460,7 @@ function pagemenu_build_menus($pagemenus, $yui = false, $menuinfo = false, $cour
 
     $data = pagemenu_get_link_data($links);
 
-	// Find all the first link IDs - this avoids going to the db for each menu or looping through all links for each module.
+    // Find all the first link IDs - this avoids going to the db for each menu or looping through all links for each module.
     $firstlinkids = array();
     foreach ($links as $link) {
         if ($link->previd == 0) {
@@ -633,15 +530,18 @@ function pagemenu_handle_edit_action($pagemenu, $action = null) {
         case 'move':
             return false;
             break;
+
         case 'movehere':
             $after = required_param('after', PARAM_INT);
             pagemenu_move_link($pagemenu, $linkid, $after);
             pagemenu_set_message(get_string('linkmoved', 'pagemenu'), 'notifysuccess');
             break;
+
         case 'delete':
             pagemenu_delete_link($linkid);
             pagemenu_set_message(get_string('linkdeleted', 'pagemenu'), 'notifysuccess');
             break;
+
         default:
             print_error('errorinvalidaction', 'pagemenu', $action);
             break;
@@ -783,7 +683,7 @@ function pagemenu_a($menuitem, $yui = false) {
 
     $title = s($menuitem->title);
 
-    return "$menuitem->pre<a href=\"$menuitem->url\" title=\"$title\" onclick=\"this.target='_top'\" class=\"$menuitem->class\">$title</a>$menuitem->post";
+    return $menuitem->pre.'<a href="'.$menuitem->url.'" title="'.$title.'" onclick="this.target=\'_top\'" class="'.$menuitem->class.'">'.$title.'</a>'.$menuitem->post;
 }
 
 /**
