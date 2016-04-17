@@ -155,8 +155,10 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
                 $alt = get_string('hide');
             }
             // WOOT - longest URL ever :P
-            $widget = "<a href=\"$CFG->wwwroot/mod/pagemenu/edit.php?a={$this->link->pagemenuid}&amp;linkid={$this->link->id}&amp;linkaction=page&amp;pageid=$page->id&amp;showhide=$pix&amp;sesskey=".sesskey()."\"
-                       <img src=\"".$OUTPUT->pix_url("t/$pix")."\" alt=\"$alt\" /></a>&nbsp;";
+            $params = array('a' => $this->link->pagemenuid, 'linkid' => $this->link->id, 'linkaction' => 'page', 'pageid' => $page->id, 'showhide' => $pix, 'sesskey' => sesskey());
+            $editurl = new moodle_url('/mod/pagemenu/edit.php', $params);
+            $widget = '<a href="'.$editurl.'">
+                       <img src="'.$OUTPUT->pix_url("t/$pix").'" alt="'.$alt.'" /></a>&nbsp;';
         } elseif ($this->is_excluded($page)) {
             // Excluded
             return false;
@@ -167,13 +169,13 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
         $menuitem->title  = $page->get_name();
         $menuitem->pre    = $widget;
         $menuitem->active = $this->is_current($page);
-        $menuitem->class = ($this->dont_display($page)) ? 'dimmed' : '' ;
+        $menuitem->class = ($this->dont_display($page)) ? 'dimmed' : '';
         $menuitem->disabled = !$page->check_activity_lock();
 
         if ($page->courseid == SITEID) {
-            $menuitem->url = "$CFG->wwwroot/index.php?page={$page->id}";
+            $menuitem->url = new moodle_url('/index.php', array('page' => $page->id));
         } else {
-            $menuitem->url = "$CFG->wwwroot/course/view.php?id={$page->courseid}&amp;page={$page->id}";
+            $menuitem->url = new moodle_url('/course/view.php', array('id' => $page->courseid, 'page' => $page->id));
         }
 
         // Deal with children, always a pain :P
@@ -374,6 +376,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
                         $status = $DB->update_record('pagemenu_link_data', $datum);
                     }
                     break;
+
                 case 'exclude':
                     // Relink page ID - do not care about failures here.
                     $newid = backup_getid($restore->backup_unique_code, 'format_page', $datum->value);
@@ -385,6 +388,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
                         $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
                     }
                     break;
+
                 default:
                     debugging('Deleting unknown data type: '.$datum->name);
                     // Not recognized

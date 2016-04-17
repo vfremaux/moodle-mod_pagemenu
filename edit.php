@@ -86,10 +86,12 @@ if ($mform->is_cancelled()) {
     $link = mod_pagemenu_link::factory($linkaction);
     $link->handle_action();
 
-    redirect("$CFG->wwwroot/mod/pagemenu/edit.php?id=$cm->id");
+    $editurl = new moodle_url('/mod/pagemenu/edit.php', array('id' => $cm->id));
+    redirect($editurl);
 }
 
-pagemenu_print_header($cm, $course, $pagemenu, 'edit', $mform->focus());
+$renderer = $PAGE->get_renderer('pagemenu');
+$renderer->header($cm, $course, $pagemenu, 'edit', $mform->focus());
 
 // Don't display menu when editing a single link.
 if (!($action == 'edit' and $linkid)) {

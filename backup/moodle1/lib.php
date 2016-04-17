@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Provides support for the conversion of moodle1 backup to the moodle2 format
  * Based off of a template @ http://docs.moodle.org/dev/Backup_1.9_conversion_for_developers
@@ -23,8 +25,6 @@
  * @copyright  2011 Valery Fremaux <valery.fremaux@club-internet.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Pagemenu conversion handler
@@ -169,6 +169,9 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
 
     // Write link content.
     public function process_pagemenu_link($data) {
+        global $currentlinkid;
+
+        $currentlinkid = $data['id'];
         $this->write_xml('link', $data);
     }
 
@@ -184,6 +187,10 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
 
     // Process datum in one single write.
     public function process_pagemenu_link_datum($datum) {
+        global $currentlinkid;
+
+        // This regenerates a missing linkid expected in new datum records.
+        $datum['linkid'] = $currentlinkid;
         $this->write_xml('datum', $datum);
     }
 

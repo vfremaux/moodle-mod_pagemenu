@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * @package moodlecore
  * @subpackage backup-moodle2
@@ -40,7 +42,7 @@ class restore_pagemenu_activity_structure_step extends restore_activity_structur
         $paths[] = new restore_path_element('link', '/activity/pagemenu/links/link');
         $paths[] = new restore_path_element('link_data', '/activity/pagemenu/links/link/data/datum');
         if ($userinfo) {
-        	// no user info
+            // no user info
         }
 
         // Return the paths wrapped into standard activity structure
@@ -60,10 +62,10 @@ class restore_pagemenu_activity_structure_step extends restore_activity_structur
         $this->apply_activity_instance($newitemid);
     }
 
-	/**
-	*
-	*
-	*/
+    /**
+     *
+     *
+     */
     protected function process_link($data) {
         global $DB;
 
@@ -77,10 +79,10 @@ class restore_pagemenu_activity_structure_step extends restore_activity_structur
         $this->set_mapping('pagemenu_links', $oldid, $newitemid);
     }
 
-	/**
-	*
-	*
-	*/
+    /**
+     *
+     *
+     */
     protected function process_link_data($data) {
         global $DB;
 
@@ -92,43 +94,43 @@ class restore_pagemenu_activity_structure_step extends restore_activity_structur
         $linktype = $DB->get_field('pagemenu_links', 'type', array('id' => $data->linkid));
         
         switch($linktype){
-        	case 'link' :
-        		break;
-        	case 'page' :
-        		$data->value = $this->get_mappingid('format_page', $data->value);
-        		break;
-        	case 'module' :
-        		// maybe all modules are not yet restored => defer to after_restore
-        		break;
+            case 'link':
+                break;
+
+            case 'page':
+                $data->value = $this->get_mappingid('format_page', $data->value);
+                break;
+
+            case 'module':
+                // maybe all modules are not yet restored => defer to after_restore
+                break;
         }        
 
         $newitemid = $DB->insert_record('pagemenu_link_data', $data);
 
-		// Probably useless as nothing links to link data
+        // Probably useless as nothing links to link data.
         // $this->set_mapping('pagemenu_link_data', $oldid, $newitemid, true);
     }
 
-	// We shall have to remap all nextid/previd of all generated links
+    // We shall have to remap all nextid/previd of all generated links.
     protected function after_restore() {
-    	global $DB;
-    	
-    	if ($allmenus = $DB->get_records('pagemenu', array('course' => $this->get_courseid()))){
-    		foreach($allmenus as $menu){    	
-		    	if ($alllinks = $DB->get_records('pagemenu_links', array('pagemenuid' => $menu->id))){
-		    		foreach($alllinks as $link){
-		    			$link->previd = $this->get_mappingid('pagemenu_links', array('id' => $link->previd));
-		    			$link->nextid = $this->get_mappingid('pagemenu_links', array('id' => $link->nextid));
-		    			$DB->update_record('pagemenu_links', $link);
-		    		}
-		    	}
-		    }
-	    }
-    	    	
+        global $DB;
+        
+        if ($allmenus = $DB->get_records('pagemenu', array('course' => $this->get_courseid()))){
+            foreach ($allmenus as $menu) {
+                if ($alllinks = $DB->get_records('pagemenu_links', array('pagemenuid' => $menu->id))){
+                    foreach ($alllinks as $link) {
+                        $link->previd = $this->get_mappingid('pagemenu_links', array('id' => $link->previd));
+                        $link->nextid = $this->get_mappingid('pagemenu_links', array('id' => $link->nextid));
+                        $DB->update_record('pagemenu_links', $link);
+                    }
+                }
+            }
+        }
     }
 
 
     protected function after_execute() {
-    	
         // Add pagemenu related files, no need to match by itemname (just internally handled context)
         $this->add_related_files('mod_pagemenu', 'intro', null);
     }
