@@ -16,6 +16,8 @@
 // The commands in here will all be database-neutral,
 // using the functions defined in lib/ddllib.php
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Link class definition
  *
@@ -24,9 +26,9 @@
  * @version $Id: page.class.php,v 1.2 2011-07-07 14:03:27 vf Exp $
  * @package pagemenu
  **/
-
 require_once($CFG->dirroot.'/course/format/page/lib.php');
 require_once($CFG->dirroot.'/course/format/page/page.class.php');
+require_once($CFG->dirroot.'/mod/pagemenu/link_base.class.php');
 
 /**
  * Link Class Definition - defines
@@ -197,7 +199,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             $menuitem->class .= " parent $active";
 
             if (!$this->yui) {  // YUI has its own image.
-                $menuitem->post = "&nbsp;<img class=\"$active\" src=\"".$OUTPUT->pix_url($active, 'pagemenu')."\" alt=\"".get_string($active, 'pagemenu').'" />';
+                $menuitem->post = '&nbsp;<img class="'.$active.'" src="'.$OUTPUT->pix_url($active, 'pagemenu').'" alt="'.get_string($active, 'pagemenu').'" />';
             }
         }
 
@@ -303,6 +305,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
      * @return boolean
      **/
     protected function dont_display(&$page) {
+
         if ($page->displaymenu && $page->is_visible()) {
             return false;
         }
@@ -361,42 +364,52 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
     * Probably obsolete or to be written elsewhere
     *
     */
-    public static function restore_data($data, $restore) {
+    public static function after_restore($restorestep, $data, $courseid) {
         global $DB;
-        
-        $status = false;
 
         foreach ($data as $datum) {
             switch ($datum->name) {
                 case 'pageid':
                     // Relink page ID
-                    $newid = backup_getid($restore->backup_unique_code, 'format_page', $datum->value);
-                    if (isset($newid->new_id)) {
-                        $datum->value = $newid->new_id;
-                        $status = $DB->update_record('pagemenu_link_data', $datum);
+                    $newid = $restorestep->get_mappingid('format_page', $datum->value);
+                    if ($newid) {
+                        $datum->value = $newid;
+                        $restorestep->log('Remapping page link_'.$datum->linkid.':linkdata_'.$datum->id.' to '.$newid, backup::LOG_ERROR);
+                        $DB->update_record('pagemenu_link_data', $datum);
+                    } else {
+                        // We could not remap, probably we have no format_pages in the backup,
+                        // We just check the page exists and is in this course. Discard if it is not linkable
+                        if (!$DB->get_record('format_page', array('id' => $datum->value, 'courseid' => $courseid))) {
+                            $restorestep->log('Failed remap page '.$datum->value.' cleaning out page link_'.$datum->linkid.':linkdata_'.$datum->id, backup::LOG_ERROR);
+                            $DB->delete_records('pagemenu_links', array('id' => $datum->linkid));
+                            $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
+                        }
                     }
                     break;
 
                 case 'exclude':
                     // Relink page ID - do not care about failures here.
-                    $newid = backup_getid($restore->backup_unique_code, 'format_page', $datum->value);
-                    if (isset($newid->new_id)) {
-                        $datum->value = $newid->new_id;
-                        $status = $DB->update_record('pagemenu_link_data', $datum);
+                    $newid = $restorestep->get_mappingid('format_page', $datum->value);
+                    if ($newid) {
+                        $restorestep->log('Remapping exclude link_'.$datum->linkid.':linkdata_'.$datum->id.' to '.$newid, backup::LOG_ERROR);
+                        $datum->value = $newid;
+                        $DB->update_record('pagemenu_link_data', $datum);
                     } else {
-                        // Failed, remove it.
-                        $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
+                        // Failed, remove it and link.
+                        if (!$DB->get_record('format_page', array('id' => $datum->value, 'courseid' => $courseid))) {
+                            $restorestep->log('Failed remap page '.$datum->value.' cleaning out page link_'.$datum->linkid.':linkdata_'.$datum->id, backup::LOG_ERROR);
+                            $DB->delete_records('pagemenu_links', array('id' => $datum->linkid));
+                            $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
+                        }
                     }
                     break;
 
                 default:
-                    debugging('Deleting unknown data type: '.$datum->name);
+                    $restorestep->log('Deleting page related unknown data type: '.$datum->name, backup::LOG_ERROR);
                     // Not recognized
                     $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
                     break;
             }
         }
-
-        return $status;
     }
 }

@@ -63,6 +63,17 @@ class restore_pagemenu_activity_structure_step extends restore_activity_structur
     }
 
     /**
+     * Overrides standard function to force a new idnumber on the instance
+     */
+    function apply_activity_instance($newitemid) {
+        global $DB;
+
+        parent::apply_activity_instance($newitemid);
+        // Generate a unique idnumber to discriminate it on GUI.
+        $DB->set_field('course_modules', 'idnumber', 'REST'.$newitemid, array('id' => $this->task->get_moduleid()));
+    }
+
+    /**
      *
      *
      */
@@ -91,20 +102,6 @@ class restore_pagemenu_activity_structure_step extends restore_activity_structur
 
         // See what needs to be remapped depending on parent's type
         $data->linkid = $this->get_mappingid('pagemenu_links', $data->linkid);
-        $linktype = $DB->get_field('pagemenu_links', 'type', array('id' => $data->linkid));
-        
-        switch($linktype){
-            case 'link':
-                break;
-
-            case 'page':
-                $data->value = $this->get_mappingid('format_page', $data->value);
-                break;
-
-            case 'module':
-                // maybe all modules are not yet restored => defer to after_restore
-                break;
-        }        
 
         $newitemid = $DB->insert_record('pagemenu_link_data', $data);
 
@@ -112,25 +109,46 @@ class restore_pagemenu_activity_structure_step extends restore_activity_structur
         // $this->set_mapping('pagemenu_link_data', $oldid, $newitemid, true);
     }
 
-    // We shall have to remap all nextid/previd of all generated links.
+    // We shall have to remap all internal bindings of all generated links.
     protected function after_restore() {
-        global $DB;
-        
-        if ($allmenus = $DB->get_records('pagemenu', array('course' => $this->get_courseid()))){
-            foreach ($allmenus as $menu) {
-                if ($alllinks = $DB->get_records('pagemenu_links', array('pagemenuid' => $menu->id))){
+        global $DB, $CFG;
+
+        $conds = array('backupid' => $this->get_restoreid(),
+                       'itemname' => 'pagemenu');
+
+        $mappings = $DB->get_records('backup_ids_temp', $conds);
+
+        if ($mappings) {
+            foreach ($mappings as $mapid => $mapping) {
+                if ($alllinks = $DB->get_records('pagemenu_links', array('pagemenuid' => $mapping->newitemid))) {
                     foreach ($alllinks as $link) {
-                        $link->previd = $this->get_mappingid('pagemenu_links', array('id' => $link->previd));
-                        $link->nextid = $this->get_mappingid('pagemenu_links', array('id' => $link->nextid));
-                        $DB->update_record('pagemenu_links', $link);
+                        // Each link type might remap what it needs.
+                        require_once($CFG->dirroot.'/mod/pagemenu/links/'.$link->type.'.class.php');
+                        $linkclass = 'mod_pagemenu_link_'.$link->type;
+                        $linkdata = $DB->get_records('pagemenu_link_data', array('linkid' => $link->id));
+                        $this->log("About to remap link ".$link->id, backup::LOG_ERROR);
+                        $linkclass::after_restore($this, $linkdata, $this->get_courseid());
                     }
                 }
             }
         }
     }
 
-
+    // Remap link chaining.
     protected function after_execute() {
+        global $DB;
+
+        $newpagemenuid = $this->get_new_parentid('pagemenu');
+
+        if ($alllinks = $DB->get_records('pagemenu_links', array('pagemenuid' => $newpagemenuid))) {
+            foreach ($alllinks as $link) {
+                $this->log('Remapping prev/next sequence in pagemenu_'.$newpagemenuid.':link_'.$link->id, backup::LOG_ERROR);
+                $link->previd = $this->get_mappingid('pagemenu_links', $link->previd);
+                $link->nextid = $this->get_mappingid('pagemenu_links', $link->nextid);
+                $DB->update_record('pagemenu_links', $link);
+            }
+        }
+
         // Add pagemenu related files, no need to match by itemname (just internally handled context)
         $this->add_related_files('mod_pagemenu', 'intro', null);
     }
