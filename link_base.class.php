@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Link class definition
  *
@@ -66,7 +68,7 @@ abstract class mod_pagemenu_link {
      * Is the link active
      *
      * @var boolean
-     **/
+     */
     public $active = false;
 
     /**
@@ -75,8 +77,8 @@ abstract class mod_pagemenu_link {
      * @param mixed $link Link record object or link record ID
      * @param array $data Link data records
      * @return void
-     **/
-    public function __construct($link = NULL, $data = NULL) {
+     */
+    public function __construct($link = null, $data = null) {
         global $CFG, $DB;
 
         // Get the last word in the classname
@@ -113,12 +115,12 @@ abstract class mod_pagemenu_link {
      * @param mixed $link (Optional) Include Link ID or Link Record Object - will be passed to constructor
      * @param object $config (Optional) The links data records
      * @param type $name description
-     **/
-    public static function factory($type, $link = NULL, $data = NULL) {
+     */
+    public static function factory($type, $link = null, $data = null) {
         global $CFG;
 
-        $classname = "mod_pagemenu_link_$type";
-        $classfile = "$CFG->dirroot/mod/pagemenu/links/$type.class.php";
+        $classname = 'mod_pagemenu_link_'.$type;
+        $classfile = $CFG->dirroot.'/mod/pagemenu/links/'.$type.'.class.php';
 
         // Get the class file if needed
         if (!class_exists($type) and file_exists($classfile)) {
@@ -340,11 +342,10 @@ abstract class mod_pagemenu_link {
     /**
      * Restore link data - return boolean!
      *
+     * @param object $restorestep Restore step object that provides access to id mapping
      * @param array $data An array of pagemenu_link_data record objects
-     * @param object $restore Restore object
      * @return boolean
      */
-    public static function restore_data($link, $restore) {
-        return true;
+    public static function after_restore($restorestep, $data, $courseid) {
     }
 }

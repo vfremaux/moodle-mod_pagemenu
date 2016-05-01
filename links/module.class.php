@@ -16,6 +16,8 @@
 // The commands in here will all be database-neutral,
 // using the functions defined in lib/ddllib.php
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Link class definition
  *
@@ -23,6 +25,7 @@
  * @version $Id: module.class.php,v 1.1 2010/03/03 15:30:10 vf Exp $
  * @package pagemenu
  **/
+require_once($CFG->dirroot.'/mod/pagemenu/link_base.class.php');
 
 /**
  * Link Class Definition - defines
@@ -88,27 +91,33 @@ class mod_pagemenu_link_module extends mod_pagemenu_link {
         return false;
     }
 
-    public static function restore_data($data, $restore) {
-        $status = false;
+    public static function after_restore($restorestep, $data, $courseid) {
+        global $DB;
 
         foreach ($data as $datum) {
             switch ($datum->name) {
                 case 'moduleid':
                     // Relink module ID.
-                    $newid = backup_getid($restore->backup_unique_code, 'course_modules', $datum->value);
-                    if (isset($newid->new_id)) {
-                        $datum->value = $newid->new_id;
-                        $status = $DB->update_record('pagemenu_link_data', $datum);
+                    $newid = $restorestep->get_mappingid('course_modules', $datum->value);
+                    if ($newid) {
+                        $datum->value = $newid;
+                        $DB->update_record('pagemenu_link_data', $datum);
+                    } else {
+                        // the course module is NOT accessible, nor mappable, so the link must be destroyed. 
+                        // This happens f.e. when restoring a single pagemenu activity into a distinct course
+                        // without importing relevant linked modules.
+                        if (!$DB->get_record('course_modules', array('id' => $datum->value, 'course' => $courseid))) {
+                            $DB->delete_records('pagemenu_links', array('id' => $datum->linkid));
+                            $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
+                        }
                     }
                     break;
                 default:
-                    debugging('Deleting unknown data type: '.$datum->name);
+                    $restorestep->log('Deleting module link related unknown data type: '.$datum->name, backup::LOG_ERROR);
                     // Not recognized
                     $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
                     break;
             }
         }
-
-        return $status;
     }
 }

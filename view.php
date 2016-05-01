@@ -36,7 +36,7 @@ require_capability('mod/pagemenu:view', context_module::instance($cm->id));
 $renderer = $PAGE->get_renderer('pagemenu');
 
 echo $renderer->header($cm, $course, $pagemenu);
-echo $OUTPUT->box(pagemenu_build_menu($pagemenu->id, false, true), 'boxwidthnormal boxaligncenter');
+echo $OUTPUT->box($renderer->build_menu($pagemenu->id, false, true), 'boxwidthnormal boxaligncenter');
 echo '<center>';
 echo $OUTPUT->single_button(new moodle_url('/course/view.php?id='.$course->id), get_string('backtocourse', 'pagemenu'));
 echo '</center>';
