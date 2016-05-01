@@ -245,3 +245,21 @@ function pagemenu_process_settings(&$pagemenu) {
     $pagemenu->timemodified = time();
     $pagemenu->taborder     = round(@$pagemenu->taborder, 0);
 }
+
+/**
+ * This function allows the tool_dbcleaner to register integrity checks
+ */
+function pagemenu_dbcleaner_add_keys() {
+    global $DB;
+
+    $pagemenumoduleid = $DB->get_field('modules', 'id', array('name' => 'pagemenu'));
+
+    $keys = array(
+        array('pagemenu', 'course', 'course', 'id', ''),
+        array('pagemenu', 'id', 'course_modules', 'instance', ' module = '.$pagemenumoduleid.' '),
+        array('pagemenu_links', 'pagemenuid', 'pagemenu', 'id', ''),
+        array('pagemenu_link_data', 'linkid', 'pagemenu_links', 'id', ''),
+    );
+
+    return $keys;
+}
