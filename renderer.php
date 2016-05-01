@@ -24,6 +24,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2009 Sam Hemelryk
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
+require_once($CFG->dirroot.'/mod/pagemenu/locallib.php');
 
 class mod_pagemenu_renderer extends plugin_renderer_base {
 
@@ -128,5 +129,274 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
         unset($SESSION->messages);
 
         return $str;
+    }
+
+    /**
+     * Generates a menu
+     *
+     * @param int $pagemenuid ID of the instance to print
+     * @param boolean $editing True if your currently editing the menu
+     * @param boolean $yui Turn YUI Menu support On/Off - If On, then extra divs and classes will be added and full trees are printed
+     * @param boolean $menuinfo True, returns menu information object.  False, return menu HTML
+     * @param array $links All of the links used by this menu
+     * @param array $data All of the data for the links used by this menu
+     * @param array $firstlinkids This is an array of IDs that are the first link for a pagemenu.  Array keys are pagemenu IDs.
+     * @return mixed
+     **/
+    function build_menu($pagemenuid, $editing = false, $yui = false, $menuinfo = false, $links = NULL, $data = NULL, $firstlinkids = array()) {
+        global $CFG, $OUTPUT, $DB;
+
+        $info            = new stdClass;
+        $info->html      = '';
+        $info->menuitems = array();
+        $info->active    = false;
+
+        // Set links if not already passed.
+        if ($links === null) {
+            $links = $DB->get_records('pagemenu_links', array('pagemenuid' => $pagemenuid));
+        }
+        // Check passed array first, otherwise go to DB.
+        if (array_key_exists($pagemenuid, $firstlinkids)) {
+            $linkid = $firstlinkids[$pagemenuid];
+        } else {
+            $linkid = pagemenu_get_first_linkid($pagemenuid);
+        }
+
+        if (!empty($links) and !empty($linkid)) {
+
+            // Get all link config data if we don't have it already.
+            if ($data === null) {
+                $data = pagemenu_get_link_data($links);
+            }
+
+            if ($editing) {
+                $action = optional_param('action', '', PARAM_ALPHA);
+
+                if ($action == 'move') {
+                    $moveid = required_param('linkid', PARAM_INT);
+                    $alt = get_string('movehere');
+                    $params = array('a' => $pagemenuid, 'action' => 'movehere', 'linkid' => $moveid, 'sesskey' => sesskey(), 'after' => '%d');
+                    $moveurl = new moodle_url('/mod/pagemenu/edit.php', $params);
+                    $movewidget = '<a title="'.$alt.'" href="'.$moveurl.'">'.
+                                  '<img src="'.$OUTPUT->pix_url('movehere').'" alt="'.$alt.'" /></a>';
+                    $move = true;
+                } else {
+                    $move = false;
+                }
+
+                $table              = new html_table();
+                $table->id          = 'edit-table';
+                $table->class       = 'generaltable';
+                $table->width       = '90%';
+                $table->tablealign  = 'center';
+                $table->cellpadding = '5px';
+                $table->cellspacing = '0';
+                $table->data        = array();
+
+                if ($move) {
+                    $table->head  = array(get_string('movingcancel', 'pagemenu', "$CFG->wwwroot/mod/pagemenu/edit.php?a=$pagemenuid"));
+                    $table->wrap  = array('nowrap');
+                    $table->data[] = array(sprintf($movewidget, 0));
+
+                } else {
+                    $table->head  = array(get_string('linktype', 'pagemenu'), get_string('actions', 'pagemenu'), get_string('rendered', 'pagemenu'));
+                    $table->align = array('left', 'center', '');
+                    $table->size  = array('*', '*', '100%');
+                    $table->wrap  = array('nowrap', 'nowrap', 'nowrap');
+                }
+            }
+
+            while ($linkid) {
+                if (array_key_exists($linkid, $data)) {
+                    $datum = $data[$linkid];
+                } else {
+                    $datum = null;
+                }
+
+                $link     = $links[$linkid];
+                $linkid   = $link->nextid;
+                $link     = mod_pagemenu_link::factory($link->type, $link, $datum);
+                $menuitem = $link->get_menuitem($editing, $yui);
+
+                // Update info.
+                if ($link->active) {
+                    $info->active = true;
+                }
+
+                if ($menuitem) {
+                    $info->menuitems[] = $menuitem;
+                }
+
+                if ($editing) {
+                    if (!$menuitem) {
+                        $html = get_string('linkitemerror', 'pagemenu');
+                    } else {
+                        $html = $this->menuitems(array($menuitem));
+                    }
+
+                    if ($move) {
+                        if ($moveid != $link->link->id) {
+                            $table->data[] = array($html);
+                            $table->data[] = array(sprintf($movewidget, $link->link->id));
+                        }
+                    } else {
+                        $widgets = array();
+                        foreach (array('move', 'edit', 'delete') as $widget) {
+                            $alt = s(get_string($widget));
+
+                            $params = array('a' => $pagemenuid, 'action' => $widget, 'linkid' => $link->link->id, 'sesskey' => sesskey());
+                            $itemurl = new moodle_url('/mod/pagemenu/edit.php', $params);
+                            $widgets[] = '<a title="'.$alt.'" href="'.$itemurl.'">'.
+                                         "<img src=\"".$OUTPUT->pix_url("t/$widget")."\" height=\"11\" width=\"11\" border=\"0\" alt=\"$alt\" /></a>";
+                        }
+
+                        $table->data[] = array($link->get_name(), implode('&nbsp;', $widgets), $html);
+                    }
+                }
+            }
+
+            if ($editing) {
+                $info->html = html_writer::table($table, true);
+            } else {
+                $info->html = $OUTPUT->box_start();
+                $info->html .= $this->menuitems($info->menuitems, 0, $yui);
+                $info->html .= $OUTPUT->box_end();
+            }
+        } else {
+            $info->html = $OUTPUT->box(get_string('nolinksinmenu', 'pagemenu'), 'generalbox boxaligncenter boxwidthnarrow centerpara', 'pagemenu-empty');
+        }
+
+        if ($menuinfo) {
+            return $info;
+        }
+        return $info->html;
+    }
+
+    /**
+     * Given an array of menu item object, this
+     * method will build a list
+     *
+     * @param array $menuitems An array of menu item objects
+     * @param int $depth Current depth for nesting lists
+     * @param boolean $yui Add extra HTML and classes to support YUI menu
+     * @return string
+     */
+    function menuitems($menuitems, $depth = 0, $yui = false) {
+        // Don't return anything for empty menus.
+        if (empty($menuitems)) {
+            return '';
+        }
+
+        $html  = '';
+        $first = true;
+        $last  = false;
+        $count = 1;
+        $end   = count($menuitems);
+
+        foreach ($menuitems as $menuitem) {
+            if ($count == $end) {
+                $last = true;
+            }
+            $item = $this->a($menuitem, $yui);
+            if ($menuitem->childtree) {
+                $item .= $this->menuitems($menuitem->childtree, $depth+1, $yui);
+            }
+            $html .= $this->li($item, $depth, $menuitem->active, $first, $last, $yui);
+
+            if ($first) {
+                $first = false;
+            }
+            $count++;
+        }
+
+        return $this->ul($html, $depth, $yui);
+    }
+
+    /**
+     * Wrap content in a ul element
+     *
+     * @param string $html HTML to be wrapped
+     * @param int $depth Current menu depth
+     * @param boolean $yui Add extra HTML and classes to support YUI menu
+     * @return string
+     */
+    function ul($html, $depth, $yui = false) {
+        if ($depth == 0) {
+            $class = 'menutree';
+        } else {
+            $class = "childtree depth$depth";
+        }
+
+        $output = '';
+
+        if ($yui) {
+            if ($depth != 0) {
+                // Cannot have this div on root list
+                $output .= '<div class="yuimenu">';
+            }
+            $output .= '<div class="bd">';
+            $class   = pagemenu_prefix_class_names($class);
+        }
+
+        $output .= "<ul class=\"$class\">$html</ul>";
+
+        if ($yui) {
+            $output .= '</div>';
+
+            if ($depth != 0) {
+                $output .= '</div>';
+            }
+        }
+        $output .= "\n";
+
+        return $output;
+    }
+
+    /**
+     * Wrap content in a list element
+     *
+     * @param string $html HTML to be wrapped
+     * @param int $depth Current menu depth
+     * @param boolean $first This is the first list item
+     * @param boolean $last This is the last list item
+     * @param boolean $yui Add extra HTML and classes to support YUI menu
+     * @return string
+     */
+    function li($html, $depth, $first, $last, $yui = false) {
+        $class = "menuitem depth$depth";
+
+        if ($last) {
+            $class .= ' lastmenuitem';
+        }
+        if ($first) {
+            $class .= ' firstmenuitem';
+        }
+        if ($yui) {
+            $class = pagemenu_prefix_class_names($class);
+        }
+
+        return "<li class=\"$class\">$html</li>\n";
+    }
+
+    /**
+     * Build a link tag from a menu item
+     *
+     * @param object $menuitem Menu item object
+     * @param boolean $yui Add extra HTML and classes to support YUI menu
+     * @return string
+     */
+    function a($menuitem, $yui = false) {
+        $menuitem->class .= ' menuitemlabel';
+
+        if ($menuitem->active) {
+            $menuitem->class .= ' current';
+        }
+        if ($yui) {
+            $menuitem->class = pagemenu_prefix_class_names($menuitem->class);
+        }
+
+        $title = s($menuitem->title);
+
+        return $menuitem->pre.'<a href="'.$menuitem->url.'" title="'.$title.'" onclick="this.target=\'_top\'" class="'.$menuitem->class.'">'.$title.'</a>'.$menuitem->post;
     }
 }

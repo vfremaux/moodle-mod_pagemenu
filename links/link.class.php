@@ -16,6 +16,8 @@
 // The commands in here will all be database-neutral,
 // using the functions defined in lib/ddllib.php
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Link class definition
  *
@@ -23,6 +25,7 @@
  * @version $Id: link.class.php,v 1.1 2010/03/03 15:30:10 vf Exp $
  * @package pagemenu
  **/
+require_once($CFG->dirroot.'/mod/pagemenu/link_base.class.php');
 
 /**
  * Link Class Definition - defines
@@ -54,7 +57,7 @@ class mod_pagemenu_link_link extends mod_pagemenu_link {
         return $menuitem;
     }
 
-    public static function restore_data($data, $restore) {
+    public static function after_restore($restorestep, $data, $courseid) {
         $linknamestatus = $linkurlstatus = false;
 
         foreach ($data as $datum) {
@@ -65,25 +68,15 @@ class mod_pagemenu_link_link extends mod_pagemenu_link {
                     break;
                 case 'linkurl':
                     $content = $datum->value;
-                    $result  = restore_decode_content_links_worker($content, $restore);
-                    if ($result != $content) {
-                        $datum->value = $result;
-                        if (debugging() and !defined('RESTORE_SILENTLY')) {
-                            echo '<br /><hr />'.s($content).'<br />changed to<br />'.s($result).'<hr /><br />';
-                        }
-                        $linkurlstatus = $DB->update_record('pagemenu_link_data', $datum);
-                    } else {
-                        $linkurlstatus = true;
-                    }
+                    // Eventually we might have to recode some link content...
+                    // $DB->update_record('pagemenu_link_data', $datum);
                     break;
                 default:
-                    debugging('Deleting unknown data type: '.$datum->name);
+                    $restorestep->log('Deleting link related unknown data type: '.$datum->name, backup::LOG_ERROR);
                     // Not recognized.
                     $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
                     break;
             }
         }
-
-        return ($linkurlstatus and $linknamestatus);
     }
 }

@@ -95,7 +95,7 @@ $renderer->header($cm, $course, $pagemenu, 'edit', $mform->focus());
 
 // Don't display menu when editing a single link.
 if (!($action == 'edit' and $linkid)) {
-    echo pagemenu_build_menu($pagemenu->id, true);
+    echo $renderer->build_menu($pagemenu->id, true);
 }
 
 // Print the form - remember it has duel purposes.
