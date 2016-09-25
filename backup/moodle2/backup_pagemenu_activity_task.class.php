@@ -22,8 +22,8 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/mod/pagemenu/backup/moodle2/backup_pagemenu_stepslib.php'); // Because it exists (must)
-require_once($CFG->dirroot . '/mod/pagemenu/backup/moodle2/backup_pagemenu_settingslib.php'); // Because it exists (optional)
+require_once($CFG->dirroot.'/mod/pagemenu/backup/moodle2/backup_pagemenu_stepslib.php'); // Because it exists (must).
+require_once($CFG->dirroot.'/mod/pagemenu/backup/moodle2/backup_pagemenu_settingslib.php'); // Because it exists (optional).
 
 /**
  * pagemenu backup task that provides all the settings and steps to perform one

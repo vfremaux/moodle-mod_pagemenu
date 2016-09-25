@@ -14,19 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Pagemenu's Local Library
  *
+ * @package     mod_pagemenu
+ * @category    mod
  * @author Moodle 2 Valery Fremaux (valery.fremaux@gmail.com) from code of Mark Nielsen
  * @version Moodle 2.x
- * @package pagemenu
- **/
+ */
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Get the base link class, almost always used
- **/
+ */
 require_once($CFG->dirroot.'/mod/pagemenu/link_base.class.php');
 require_once($CFG->dirroot.'/mod/pagemenu/classes/event/course_module_viewed.php');
 
@@ -34,7 +35,7 @@ require_once($CFG->dirroot.'/mod/pagemenu/classes/event/course_module_viewed.php
  * Get link types
  *
  * @return array
- **/
+ */
 function pagemenu_get_links() {
     return array('link', 'module', 'page');
 }
@@ -43,7 +44,7 @@ function pagemenu_get_links() {
  * Get an array of link type classes
  *
  * @return array
- **/
+ */
 function pagemenu_get_link_classes() {
     $return = array();
     foreach(pagemenu_get_links() as $type) {
@@ -149,10 +150,10 @@ function pagemenu_get_last_linkid($pagemenuid) {
  * @param int $previd (Optional) If the last link ID is know, then pass it here  DO NOT PASS ANY OTHER ID!!!
  * @return object
  */
-function pagemenu_append_link($link, $previd = NULL) {
+function pagemenu_append_link($link, $previd = null) {
     global $DB;
 
-    if ($previd !== NULL) {
+    if ($previd !== null) {
         $link->previd = $previd;
     } else if ($lastid = pagemenu_get_last_linkid($link->pagemenuid)) {
         // Add new one after
@@ -180,7 +181,7 @@ function pagemenu_append_link($link, $previd = NULL) {
  *
  * @param int $linkid ID of the link to delete
  * @return boolean
- **/
+ */
 function pagemenu_delete_link($linkid) {
     global $DB;
 
@@ -202,7 +203,7 @@ function pagemenu_delete_link($linkid) {
  * @param int $linkid ID of the link we are moving
  * @param int $after ID of the link we are moving our link after (can be 0)
  * @return boolean
- **/
+ */
 function pagemenu_move_link($pagemenu, $linkid, $after) {
     global $DB;
 
@@ -256,7 +257,7 @@ function pagemenu_move_link($pagemenu, $linkid, $after) {
  *
  * @param int $linkid ID of the link to remove
  * @return boolean
- **/
+ */
 function pagemenu_remove_link_from_ordering($linkid) {
     global $DB;
 
@@ -286,8 +287,8 @@ function pagemenu_remove_link_from_ordering($linkid) {
  * @param boolean $menuinfo True, returns menu information object.  False, return menu HTML
  * @param int $courseid ID of the course that the menus belong
  * @return array
- **/
-function pagemenu_build_menus($pagemenus, $yui = false, $menuinfo = false, $courseid = NULL) {
+ */
+function pagemenu_build_menus($pagemenus, $yui = false, $menuinfo = false, $courseid = null) {
     global $COURSE, $PAGE, $DB;
 
     $renderer = $PAGE->get_renderer('mod_pagemenu');
@@ -296,7 +297,7 @@ function pagemenu_build_menus($pagemenus, $yui = false, $menuinfo = false, $cour
         $courseid = $COURSE->id;
     }
 
-/// Filter out the menus that the user cannot see.
+    // Filter out the menus that the user cannot see.
 
     $canviewhidden = has_capability('moodle/course:viewhiddenactivities', context_course::instance($courseid));
 
@@ -311,7 +312,7 @@ function pagemenu_build_menus($pagemenus, $yui = false, $menuinfo = false, $cour
     }
 
     if (empty($pagemenuids)) {
-        // Cannot see any of them
+        // Cannot see any of them.
         return false;
     }
 
@@ -345,7 +346,7 @@ function pagemenu_build_menus($pagemenus, $yui = false, $menuinfo = false, $cour
  *
  * @param array $links An array of links with the keys = linkid
  * @return array
- **/
+ */
 function pagemenu_get_link_data($links) {
     global $DB;
 
@@ -374,7 +375,7 @@ function pagemenu_get_link_data($links) {
  * @param object $pagemenu Page menu instance
  * @param string $action Action that is being performed
  * @return boolean If return true, then a redirect will occure (in edit.php at least)
- **/
+ */
 function pagemenu_handle_edit_action($pagemenu, $action = null) {
 
     if (!confirm_sesskey()) {

@@ -102,7 +102,7 @@ class mod_pagemenu_link_module extends mod_pagemenu_link {
                         $DB->update_record('pagemenu_link_data', $datum);
                     } else {
                         /*
-                         * the course module is NOT accessible, nor mappable, so the link must be destroyed. 
+                         * the course module is NOT accessible, nor mappable, so the link must be destroyed.
                          * This happens f.e. when restoring a single pagemenu activity into a distinct course
                          * without importing relevant linked modules.
                          */
@@ -115,7 +115,7 @@ class mod_pagemenu_link_module extends mod_pagemenu_link {
                 }
                 default: {
                     $restorestep->log('Deleting module link related unknown data type: '.$datum->name, backup::LOG_ERROR);
-                    // Not recognized/
+                    // Not recognized.
                     $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
                     break;
                 }

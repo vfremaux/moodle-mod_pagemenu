@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Version details.
@@ -33,5 +33,5 @@ $plugin->maturity = MATURITY_RC;
 $plugin->release = "2.7.0 (Build 2014030800)";
 $plugin->dependencies = array('format_page' => 2013012900);
 
-// Non moodle attributes
+// Non moodle attributes.
 $plugin->codeincrement = '2.7.0000';

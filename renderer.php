@@ -41,7 +41,7 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
      * @param boolean $showtabs Display tabs yes/no
      * @return void
      */
-    function header($cm, $course, $pagemenu, $currenttab = 'view', $focus = '', $showtabs = true) {
+    public function header($cm, $course, $pagemenu, $currenttab = 'view', $focus = '', $showtabs = true) {
         global $PAGE, $OUTPUT;
 
         $strname = format_string($pagemenu->name);
@@ -82,7 +82,7 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
      *
      * @return void
      */
-    function tabs($cm, $currenttab) {
+    public function tabs($cm, $currenttab) {
 
         if (has_capability('mod/pagemenu:manage', context_module::instance($cm->id))) {
             $tabs = $row = $inactive = array();
@@ -108,7 +108,7 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
      * @uses $SESSION
      * @return boolean
      */
-    function messages() {
+    public function messages() {
         global $SESSION, $OUTPUT;
 
         $str = '';
@@ -140,7 +140,8 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
      * @param array $firstlinkids This is an array of IDs that are the first link for a pagemenu.  Array keys are pagemenu IDs.
      * @return mixed
      */
-    public function build_menu($pagemenuid, $editing = false, $yui = false, $menuinfo = false, $links = NULL, $data = NULL, $firstlinkids = array()) {
+    public function build_menu($pagemenuid, $editing = false, $yui = false, $menuinfo = false,
+        $links = null, $data = null, $firstlinkids = array()) {
         global $CFG, $OUTPUT, $DB;
 
         $info = new stdClass;
@@ -172,7 +173,8 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
                 if ($action == 'move') {
                     $moveid = required_param('linkid', PARAM_INT);
                     $alt = get_string('movehere');
-                    $params = array('a' => $pagemenuid, 'action' => 'movehere', 'linkid' => $moveid, 'sesskey' => sesskey(), 'after' => '%d');
+                    $params = array('a' => $pagemenuid, 'action' => 'movehere', 'linkid' => $moveid, 
+                        'sesskey' => sesskey(), 'after' => '%d');
                     $moveurl = new moodle_url('/mod/pagemenu/edit.php', $params);
                     $movewidget = '<a title="'.$alt.'" href="'.$moveurl.'">'.
                                   '<img src="'.$OUTPUT->pix_url('movehere').'" alt="'.$alt.'" /></a>';
@@ -244,10 +246,12 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
                         foreach (array('move', 'edit', 'delete') as $widget) {
                             $alt = s(get_string($widget));
 
-                            $params = array('a' => $pagemenuid, 'action' => $widget, 'linkid' => $link->link->id, 'sesskey' => sesskey());
+                            $params = array('a' => $pagemenuid, 'action' => $widget,
+                                'linkid' => $link->link->id, 'sesskey' => sesskey());
                             $itemurl = new moodle_url('/mod/pagemenu/edit.php', $params);
+                            $pixurl = $OUTPUT->pix_url("t/$widget");
                             $widgets[] = '<a title="'.$alt.'" href="'.$itemurl.'">'.
-                                         "<img src=\"".$OUTPUT->pix_url("t/$widget")."\" height=\"11\" width=\"11\" border=\"0\" alt=\"$alt\" /></a>";
+                                '<img src="'.$pixurl.'" height="11" width="11" border="0" alt="'.$alt.'" /></a>';
                         }
 
                         $table->data[] = array($link->get_name(), implode('&nbsp;', $widgets), $html);
@@ -332,7 +336,7 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
 
         if ($yui) {
             if ($depth != 0) {
-                // Cannot have this div on root list
+                // Cannot have this div on root list.
                 $output .= '<div class="yuimenu">';
             }
             $output .= '<div class="bd">';

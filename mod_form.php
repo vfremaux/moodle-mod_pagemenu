@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form to define a new instance of this module or edit an 
+ * Form to define a new instance of this module or edit an
  * existing instance.  It is used from /course/modedit.php.
  *
  * @version
@@ -34,7 +34,7 @@ class mod_pagemenu_mod_form extends moodleform_mod {
         // Our general settings.
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
-        $mform->addElement('text', 'name', get_string('name'), array('size'=>'30'));
+        $mform->addElement('text', 'name', get_string('name'), array('size' => '30'));
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
 

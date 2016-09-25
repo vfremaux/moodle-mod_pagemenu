@@ -110,7 +110,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             return false;
         }
         if (!$page = course_page::get($this->config->pageid)) {
-            // Probably deleted :(
+            // Probably deleted :(.
             return false;
         }
 
@@ -139,7 +139,8 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
         global $OUTPUT;
 
         $cm = get_coursemodule_from_instance('pagemenu', $this->link->pagemenuid);
-        if ($this->dont_display($page) && !has_capability('mod/pagemenu:viewhidden', context_module::instance($cm->id), NULL, false)) {
+        if ($this->dont_display($page) &&
+                !has_capability('mod/pagemenu:viewhidden', context_module::instance($cm->id), null, false)) {
             return false;
         }
 
@@ -155,11 +156,12 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
                 $alt = get_string('hide');
             }
             // WOOT - longest URL ever :P.
-            $params = array('a' => $this->link->pagemenuid, 'linkid' => $this->link->id, 'linkaction' => 'page', 'pageid' => $page->id, 'showhide' => $pix, 'sesskey' => sesskey());
+            $params = array('a' => $this->link->pagemenuid, 'linkid' => $this->link->id,
+                'linkaction' => 'page', 'pageid' => $page->id, 'showhide' => $pix, 'sesskey' => sesskey());
             $editurl = new moodle_url('/mod/pagemenu/edit.php', $params);
             $widget = '<a href="'.$editurl.'">
                        <img src="'.$OUTPUT->pix_url("t/$pix").'" alt="'.$alt.'" /></a>&nbsp;';
-        } elseif ($this->is_excluded($page)) {
+        } else if ($this->is_excluded($page)) {
             // Excluded
             return false;
         }
@@ -199,7 +201,8 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             $menuitem->class .= " parent $active";
 
             if (!$this->yui) {  // YUI has its own image.
-                $menuitem->post = '&nbsp;<img class="'.$active.'" src="'.$OUTPUT->pix_url($active, 'pagemenu').'" alt="'.get_string($active, 'pagemenu').'" />';
+                $pixurl = $OUTPUT->pix_url($active, 'pagemenu');
+                $menuitem->post = '&nbsp;<img class="'.$active.'" src="'.$pixurl.'" alt="'.get_string($active, 'pagemenu').'" />';
             }
         }
 
@@ -228,7 +231,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
      * Helper method to clean up code
      *
      * Determines if the current page is active,
-     * meaning it should display its children if 
+     * meaning it should display its children if
      * it has any.
      *
      * @param int $pageid Page ID
@@ -378,7 +381,9 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
                         // We could not remap, probably we have no format_pages in the backup,
                         // We just check the page exists and is in this course. Discard if it is not linkable.
                         if (!$DB->get_record('format_page', array('id' => $datum->value, 'courseid' => $courseid))) {
-                            $restorestep->log('Failed remap page '.$datum->value.' cleaning out page link_'.$datum->linkid.':linkdata_'.$datum->id, backup::LOG_ERROR);
+                            $message = 'Failed remap page '.$datum->value.' ';
+                            $message .= 'cleaning out page link_'.$datum->linkid.':linkdata_'.$datum->id;
+                            $restorestep->log($message, backup::LOG_ERROR);
                             $DB->delete_records('pagemenu_links', array('id' => $datum->linkid));
                             $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
                         }
@@ -395,7 +400,9 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
                     } else {
                         // Failed, remove it and link.
                         if (!$DB->get_record('format_page', array('id' => $datum->value, 'courseid' => $courseid))) {
-                            $restorestep->log('Failed remap page '.$datum->value.' cleaning out page link_'.$datum->linkid.':linkdata_'.$datum->id, backup::LOG_ERROR);
+                            $message = 'Failed remap page '.$datum->value.' ';
+                            $message .= 'cleaning out page link_'.$datum->linkid.':linkdata_'.$datum->id
+                            $restorestep->log($message, backup::LOG_ERROR);
                             $DB->delete_records('pagemenu_links', array('id' => $datum->linkid));
                             $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
                         }

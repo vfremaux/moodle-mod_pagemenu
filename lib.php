@@ -30,18 +30,28 @@
  */
 function pagemenu_supports($feature) {
     switch($feature) {
-        case FEATURE_MOD_ARCHETYPE:           return MOD_ARCHETYPE_OTHER;
-        case FEATURE_GROUPS:                  return false;
-        case FEATURE_GROUPINGS:               return false;
-        case FEATURE_GROUPMEMBERSONLY:        return false;
-        case FEATURE_MOD_INTRO:               return false;
-        case FEATURE_COMPLETION_TRACKS_VIEWS: return false;
-        case FEATURE_GRADE_HAS_GRADE:         return false;
-        case FEATURE_GRADE_OUTCOMES:          return false;
-        case FEATURE_BACKUP_MOODLE2:          return true;
-        case FEATURE_SHOW_DESCRIPTION:        return false;
-
-        default: return null;
+        case FEATURE_MOD_ARCHETYPE:
+            return MOD_ARCHETYPE_OTHER;
+        case FEATURE_GROUPS:
+            return false;
+        case FEATURE_GROUPINGS:
+            return false;
+        case FEATURE_GROUPMEMBERSONLY:
+            return false;
+        case FEATURE_MOD_INTRO:
+            return false;
+        case FEATURE_COMPLETION_TRACKS_VIEWS:
+            return false;
+        case FEATURE_GRADE_HAS_GRADE:
+            return false;
+        case FEATURE_GRADE_OUTCOMES:
+            return false;
+        case FEATURE_BACKUP_MOODLE2:
+            return true;
+        case FEATURE_SHOW_DESCRIPTION:
+            return false;
+        default:
+            return null;
     }
 }
 
@@ -158,21 +168,6 @@ function pagemenu_print_recent_activity($course, $isteacher, $timestart) {
 }
 
 /**
- * Function to be run periodically according to the moodle cron
- * This function searches for things that need to be done, such
- * as sending out mail, toggling flags etc ...
- *
- * @uses $CFG
- * @return boolean
- * @todo Finish documenting this function
- */
-function pagemenu_cron () {
-    global $CFG;
-
-    return true;
-}
-
-/**
  * Must return an array of grades for a given instance of this module,
  * indexed by user.  It also returns a maximum allowed grade.
  *
@@ -186,7 +181,7 @@ function pagemenu_cron () {
  * @return mixed Null or object with an array of grades and with the maximum grade
  */
 function pagemenu_grades($pagemenuid) {
-   return null;
+    return null;
 }
 
 /**
