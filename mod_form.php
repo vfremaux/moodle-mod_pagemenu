@@ -15,31 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form to define a new instance of this module or edit an 
+ * Form to define a new instance of this module or edit an
  * existing instance.  It is used from /course/modedit.php.
  *
  * @version
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package pagemenu
  * @author moodle 2.x valery.fremaux valery.fremaux@gmail.com
- **/
+ */
 
-require_once('moodleform_mod.php');
+defined('MOODLE_INTERNAL') || die();
 
 class mod_pagemenu_mod_form extends moodleform_mod {
 
-    function definition() {
+    public function definition() {
         $mform =& $this->_form;
 
         // Our general settings.
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
-        $mform->addElement('text', 'name', get_string('name'), array('size'=>'64'));
-        if (!empty($CFG->formatstringstriptags)) {
-            $mform->setType('name', PARAM_TEXT);
-        } else {
-            $mform->setType('name', PARAM_CLEANHTML);
-        }
+        $mform->addElement('text', 'name', get_string('name'), array('size' => '30'));
+        $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
@@ -61,14 +57,13 @@ class mod_pagemenu_mod_form extends moodleform_mod {
         $this->add_action_buttons();
     }
 
-    function definition_after_data() {
+    public function definition_after_data() {
         $mform =& $this->_form;
 
         // Once form is submitted, check to make sure our checkboxes are set to something.
         if ($this->is_submitted()) {
             $values = &$mform->_submitValues;
 
-            // foreach (array('useastab', 'displayname') as $key) {
             foreach (array('displayname') as $key) {
                 if (!isset($values[$key])) {
                     $values[$key] = 0;
