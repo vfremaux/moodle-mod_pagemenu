@@ -401,7 +401,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
                         // Failed, remove it and link.
                         if (!$DB->get_record('format_page', array('id' => $datum->value, 'courseid' => $courseid))) {
                             $message = 'Failed remap page '.$datum->value.' ';
-                            $message .= 'cleaning out page link_'.$datum->linkid.':linkdata_'.$datum->id
+                            $message .= 'cleaning out page link_'.$datum->linkid.':linkdata_'.$datum->id;
                             $restorestep->log($message, backup::LOG_ERROR);
                             $DB->delete_records('pagemenu_links', array('id' => $datum->linkid));
                             $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
