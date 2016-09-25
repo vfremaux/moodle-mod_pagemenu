@@ -65,7 +65,7 @@ class restore_pagemenu_activity_structure_step extends restore_activity_structur
     /**
      * Overrides standard function to force a new idnumber on the instance
      */
-    function apply_activity_instance($newitemid) {
+    public function apply_activity_instance($newitemid) {
         global $DB;
 
         parent::apply_activity_instance($newitemid);

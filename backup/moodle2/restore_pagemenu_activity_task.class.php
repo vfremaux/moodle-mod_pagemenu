@@ -108,36 +108,6 @@ class restore_pagemenu_activity_task extends restore_activity_task {
         return $rules;
     }
 
-    /*
-     * We need to a posteriori remap some possible module links and recode next/previous fields in links
-     *
-     */
-    /*
-    public function after_restore(){
-        global $DB;
-
-        $pagemenuid = $this->get_activityid();
-
-        if ($modulelinks = $DB->get_records('pagemenu_links', array('pagemenuid' => $pagemenuid))){
-            foreach ($modulelinks as $ml) {
-
-                $ml->previd = $this->get_mappingid('pagemenu_links', $ml->previd);
-                $ml->nextid = $this->get_mappingid('pagemenu_links', $ml->nextid);
-
-                if ($ml->type == 'module'){
-                    if ($link = $DB->get_record('pagemenu_link_data', array('linkid' => $ml->id))){
-                        $link->value = $this->get_mappingid('course_module', $link->value);
-                        $DB->update_record('pagemenu_link_data', $link);
-                    } else {
-                        $this->get_logger()->process("Failed to restore dependency for pagemenu link '$ml->name'. ", backup::LOG_ERROR);                
-                    }
-                }
-                $DB->update_record('pagemenu_links', $ml);
-            }
-        }
-    }
-    */
-
     /**
      * Return the new id of a mapping for the given itemname
      *

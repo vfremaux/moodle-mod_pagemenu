@@ -128,7 +128,7 @@ abstract class mod_pagemenu_link {
         }
         // Make sure the class name is defined.
         if (class_exists($classname)) {
-            // Woot!  Make it :)
+            // Woot!  Make it :).
             return new $classname($link, $data);
         }
         throw new Exception("pagemenu_link factory error for type: $type");
@@ -201,7 +201,7 @@ abstract class mod_pagemenu_link {
 
     /**
      * Get the names of the link data items
-     * This allows for the auto processing of 
+     * This allows for the auto processing of
      * simple data items.
      *
      * @return array

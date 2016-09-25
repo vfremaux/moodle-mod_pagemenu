@@ -76,7 +76,7 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
             new convert_path(
                 'pagemenu_link_datum', '/MOODLE_BACKUP/COURSE/MODULES/MOD/PAGEMENU/LINKS/LINK/DATA/DATUM',
                 array()
-        ));
+            ));
     }
 
     /**

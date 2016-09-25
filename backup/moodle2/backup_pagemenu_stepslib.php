@@ -34,7 +34,8 @@ class backup_pagemenu_activity_structure_step extends backup_activity_structure_
 
         // Define each element separated.
 
-        $pagemenu = new backup_nested_element('pagemenu', array('id'), array('name', 'intro', 'introformat', 'displayname', 'timemodified'));
+        $cols = array('name', 'intro', 'introformat', 'displayname', 'timemodified');
+        $pagemenu = new backup_nested_element('pagemenu', array('id'), $cols);
 
         $links = new backup_nested_element('links');
 

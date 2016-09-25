@@ -37,9 +37,9 @@ class mod_pagemenu_link_link extends mod_pagemenu_link {
     }
 
     public function edit_form_add(&$mform) {
-        $mform->addElement('text', 'linkname', get_string('linkname', 'pagemenu'), array('size'=>'47'));
+        $mform->addElement('text', 'linkname', get_string('linkname', 'pagemenu'), array('size' => '47'));
         $mform->setType('linkname', PARAM_TEXT);
-        $mform->addElement('text', 'linkurl', get_string('linkurl', 'pagemenu'), array('size'=>'47'));
+        $mform->addElement('text', 'linkurl', get_string('linkurl', 'pagemenu'), array('size' => '47'));
         $mform->setType('linkurl', PARAM_TEXT);
     }
 
@@ -70,7 +70,6 @@ class mod_pagemenu_link_link extends mod_pagemenu_link {
                 }
                 case 'linkurl': {
                     // Eventually we might have to recode some link content...
-                    // $DB->update_record('pagemenu_link_data', $datum);
                     break;
                 }
                 default: {
