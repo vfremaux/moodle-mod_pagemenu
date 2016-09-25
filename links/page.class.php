@@ -1,31 +1,29 @@
 <?php
-// This file keeps track of upgrades to 
-// this module
+// This file is part of Moodle - http://moodle.org/
 //
-// Sometimes, changes between versions involve
-// alterations to database structures and other
-// major things that may break installations.
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
-// The upgrade function in this file will attempt
-// to perform all the necessary actions to upgrade
-// your older installtion to the current version.
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// If there's something it cannot do itself, it
-// will tell you what you need to do.
-//
-// The commands in here will all be database-neutral,
-// using the functions defined in lib/ddllib.php
-
-defined('MOODLE_INTERNAL') || die();
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Link class definition
+ * Link Page class definition
  *
+ * @package mod_pagemenu
+ * @category mod
  * @author Mark Nielsen
- * @reauthor Valery Fremaux (valery.fremaux@gmail.com)
- * @version $Id: page.class.php,v 1.2 2011-07-07 14:03:27 vf Exp $
- * @package pagemenu
- **/
+ * @author Valery Fremaux (valery.fremaux@gmail.com)
+ */
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/course/format/page/lib.php');
 require_once($CFG->dirroot.'/course/format/page/page.class.php');
 require_once($CFG->dirroot.'/mod/pagemenu/link_base.class.php');
@@ -63,7 +61,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
 
     /**
      * Needs to handle exludes
-     **/
+     */
     protected function get_config($data) {
         global $DB;
 
@@ -90,7 +88,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
      * Handles the page link item hide/show
      *
      * @return void
-     **/
+     */
     public function handle_action() {
         $showhide = required_param('showhide', PARAM_ALPHA);
         $pageid   = required_param('pageid', PARAM_INT);
@@ -136,9 +134,9 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
      *
      * @param object $page Page Format Object with child tree set
      * @return string
-     **/
+     */
     protected function page_to_menuitem($page) {
-        global $CFG, $OUTPUT;
+        global $OUTPUT;
 
         $cm = get_coursemodule_from_instance('pagemenu', $this->link->pagemenuid);
         if ($this->dont_display($page) && !has_capability('mod/pagemenu:viewhidden', context_module::instance($cm->id), NULL, false)) {
@@ -156,7 +154,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
                 $pix = 'hide';
                 $alt = get_string('hide');
             }
-            // WOOT - longest URL ever :P
+            // WOOT - longest URL ever :P.
             $params = array('a' => $this->link->pagemenuid, 'linkid' => $this->link->id, 'linkaction' => 'page', 'pageid' => $page->id, 'showhide' => $pix, 'sesskey' => sesskey());
             $editurl = new moodle_url('/mod/pagemenu/edit.php', $params);
             $widget = '<a href="'.$editurl.'">
@@ -180,15 +178,17 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             $menuitem->url = new moodle_url('/course/view.php', array('id' => $page->courseid, 'page' => $page->id));
         }
 
-        // Deal with children, always a pain :P
+        // Deal with children, always a pain :P.
         $children = $page->get_children();
         if (!empty($children) and !$this->is_excluded($page) and ($this->editing or $this->yui or $this->is_active($page))) {
-            // First, we have children
-            // AND the current page is not excluded, so we can print children
-            // AND we are either editing, printing yui menu or it is active (all reasons to print children)
+            /*
+             * First, we have children
+             * AND the current page is not excluded, so we can print children
+             * AND we are either editing, printing yui menu or it is active (all reasons to print children)
+             */
             $menuitem->childtree = $this->pages_to_menuitems($children);
         }
-        
+
         // Determine if we display this as a active or inactive parent.
         if (!empty($menuitem->childtree) and !$this->is_excluded($page)) {
             if ($this->editing or $this->is_active($page)) {
@@ -242,7 +242,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             $this->active = true;
             return true;
         } else if ($parents === null) {
-            // Not current page, see if this page is one of the parents of an active child page
+            // Not current page, see if this page is one of the parents of an active child page.
             if (!empty($this->currentpageid)) {
                 $parents = $page->get_parents();
             } else {
@@ -331,22 +331,21 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
      * @return array
      **/
     protected function build_select_menu($pages) {
-        global $COURSE;
-        
+
         $options = array();
 
         foreach ($pages as $page) {
 
-            // Build the name string - first add white space
+            // Build the name string - first add white space.
             $depth = $page->get_page_depth();
-            
+
             $options[$page->id] = str_repeat('&nbsp;&nbsp;', $depth);
             if ($depth > 0) {
-                // Add a hyphen before all child pages
+                // Add a hyphen before all child pages.
                 $options[$page->id] .= '-&nbsp;';
             }
 
-            // Add the actual name
+            // Add the actual name.
             $name = shorten_text($page->get_name($page), 45);
             if ($this->dont_display($page)) {
                 $name = '('.$name.')';
@@ -361,16 +360,15 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
     }
 
     /**
-    * Probably obsolete or to be written elsewhere
-    *
-    */
+     * Probably obsolete or to be written elsewhere
+     */
     public static function after_restore($restorestep, $data, $courseid) {
         global $DB;
 
         foreach ($data as $datum) {
             switch ($datum->name) {
                 case 'pageid':
-                    // Relink page ID
+                    // Relink page ID.
                     $newid = $restorestep->get_mappingid('format_page', $datum->value);
                     if ($newid) {
                         $datum->value = $newid;
@@ -378,7 +376,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
                         $DB->update_record('pagemenu_link_data', $datum);
                     } else {
                         // We could not remap, probably we have no format_pages in the backup,
-                        // We just check the page exists and is in this course. Discard if it is not linkable
+                        // We just check the page exists and is in this course. Discard if it is not linkable.
                         if (!$DB->get_record('format_page', array('id' => $datum->value, 'courseid' => $courseid))) {
                             $restorestep->log('Failed remap page '.$datum->value.' cleaning out page link_'.$datum->linkid.':linkdata_'.$datum->id, backup::LOG_ERROR);
                             $DB->delete_records('pagemenu_links', array('id' => $datum->linkid));
@@ -406,7 +404,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
 
                 default:
                     $restorestep->log('Deleting page related unknown data type: '.$datum->name, backup::LOG_ERROR);
-                    // Not recognized
+                    // Not recognized.
                     $DB->delete_records('pagemenu_link_data', array('id' => $datum->id));
                     break;
             }

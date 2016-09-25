@@ -20,7 +20,7 @@
  * @author Mark Nielsen
  * @version $Id: view.php,v 1.2 2012-06-18 16:08:03 vf Exp $
  * @package pagemenu
- **/
+ */
 
 require_once('../../config.php');
 require_once($CFG->dirroot.'/mod/pagemenu/locallib.php');

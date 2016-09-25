@@ -22,7 +22,7 @@ defined('MOODLE_INTERNAL') || die();
  * @author Mark Nielsen
  * @version $Id: link.class.php,v 1.1 2010/03/03 15:30:09 vf Exp $
  * @package pagemenu
- **/
+ */
 
 /**
  * Base link class
@@ -33,35 +33,35 @@ abstract class mod_pagemenu_link {
      * Link type
      *
      * @var string
-     **/
+     */
     public $type;
 
     /**
      * Link record object
      *
      * @var object
-     **/
+     */
     public $link;
 
     /**
      * Link config options
      *
      * @var object
-     **/
+     */
     public $config;
 
     /**
      * Editing flag
      *
      * @var boolean
-     **/
+     */
     protected $editing = false;
 
     /**
      * YUI support flag
      *
      * @var boolean
-     **/
+     */
     protected $yui = false;
 
     /**
@@ -79,9 +79,9 @@ abstract class mod_pagemenu_link {
      * @return void
      */
     public function __construct($link = null, $data = null) {
-        global $CFG, $DB;
+        global $DB;
 
-        // Get the last word in the classname
+        // Get the last word in the classname.
         $this->type = get_class($this);
         $this->type = explode('_', $this->type);
         $this->type = end($this->type);
@@ -122,11 +122,11 @@ abstract class mod_pagemenu_link {
         $classname = 'mod_pagemenu_link_'.$type;
         $classfile = $CFG->dirroot.'/mod/pagemenu/links/'.$type.'.class.php';
 
-        // Get the class file if needed
+        // Get the class file if needed.
         if (!class_exists($type) and file_exists($classfile)) {
             require_once($classfile);
         }
-        // Make sure the class name is defined
+        // Make sure the class name is defined.
         if (class_exists($classname)) {
             // Woot!  Make it :)
             return new $classname($link, $data);
@@ -138,7 +138,7 @@ abstract class mod_pagemenu_link {
      * Returns the display name of the link
      *
      * @return string
-     **/
+     */
     public function get_name() {
         return get_string($this->type, 'pagemenu');
     }
@@ -149,7 +149,7 @@ abstract class mod_pagemenu_link {
      *
      * @param object $mform The Moodle Form Class
      * @return void
-     **/
+     */
     abstract public function edit_form_add(&$mform);
 
     /**
@@ -158,7 +158,7 @@ abstract class mod_pagemenu_link {
      *
      * @param object $data Form data (cleaned)
      * @return mixed
-     **/
+     */
     public function save($data) {
         $names = $this->get_data_names();
 
@@ -186,7 +186,7 @@ abstract class mod_pagemenu_link {
      *
      * @param int $pagemenuid Instance ID
      * @return int
-     **/
+     */
     public function add_new_link($pagemenuid) {
         $link             = new stdClass;
         $link->type       = $this->type;
@@ -205,7 +205,7 @@ abstract class mod_pagemenu_link {
      * simple data items.
      *
      * @return array
-     **/
+     */
     public function get_data_names() {
         return array();
     }
@@ -218,7 +218,7 @@ abstract class mod_pagemenu_link {
      * @param mixed $value Value of the data
      * @param boolean $unique Is the name/value combination unique?
      * @return int
-     **/
+     */
     public function save_data($linkid, $name, $value, $unique = false) {
         global $DB;
 
@@ -232,9 +232,11 @@ abstract class mod_pagemenu_link {
         if ($unique) {
             $fieldname  = 'value';
             $fieldvalue = $data->value;
-            $id = $DB->get_field('pagemenu_link_data', 'id', array('linkid' => $linkid, 'name' => $name, $fieldname => $fieldvalue));
+            $params = array('linkid' => $linkid, 'name' => $name, $fieldname => $fieldvalue);
+            $id = $DB->get_field('pagemenu_link_data', 'id', $params);
         } else {
-            $id = $DB->get_field('pagemenu_link_data', 'id', array('linkid' => $linkid, 'name' => $name));
+            $params = array('linkid' => $linkid, 'name' => $name);
+            $id = $DB->get_field('pagemenu_link_data', 'id', $params);
         }
 
         if ($id) {
@@ -257,14 +259,14 @@ abstract class mod_pagemenu_link {
      *
      * @param array $data An array of pagemenu_link_data records belonging to this link
      * @return object
-     **/
+     */
     protected function get_config($data) {
         global $DB;
 
         $config = new stdClass;
 
         if (!empty($this->link->id)) {
-            if ($data !== NULL or $data = $DB->get_records('pagemenu_link_data', array('linkid' => $this->link->id))) {
+            if ($data !== null or $data = $DB->get_records('pagemenu_link_data', array('linkid' => $this->link->id))) {
 
                 foreach ($data as $datum) {
                     $config->{$datum->name} = $datum->value;
@@ -319,8 +321,8 @@ abstract class mod_pagemenu_link {
      * @param string $url URL to test - see if it is the current page
      * @return boolean
      */
-    protected function is_active($url = NULL) {
-        if ($url === NULL) {
+    protected function is_active($url = null) {
+        if ($url === null) {
             return false;
         } else if (strpos(qualified_me(), $url) === false) {
             return false;
@@ -337,15 +339,5 @@ abstract class mod_pagemenu_link {
      */
     public function is_enabled() {
         return true;
-    }
-
-    /**
-     * Restore link data - return boolean!
-     *
-     * @param object $restorestep Restore step object that provides access to id mapping
-     * @param array $data An array of pagemenu_link_data record objects
-     * @return boolean
-     */
-    public static function after_restore($restorestep, $data, $courseid) {
     }
 }
