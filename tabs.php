@@ -15,16 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* Tabs
-*
-* @author Mark Nielsen
-* @version $Id: tabs.php,v 1.1 2010/03/03 15:30:09 vf Exp $
-* @package pagemenu
-*/
+ * Tabs
+ *
+ * @author Mark Nielsen
+ * @package mod_pagemenu
+ */
 
-// This file to be included so we can assume config.php has already been included.
-
-if (!defined('MOODLE_INTERNAL')) die('You cannot call this script in that way');
+defined('MOODLE_INTERNAL') || die();
 
 if (!isset($currenttab)) {
     $currenttab = '';

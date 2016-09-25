@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,15 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Moodle renderer used to display special elements of the lesson module
  *
  * @package mod_pagemenu
- * @copyright  2009 Sam Hemelryk
+ * @category mod
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- **/
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/mod/pagemenu/locallib.php');
 
 class mod_pagemenu_renderer extends plugin_renderer_base {
@@ -40,15 +40,13 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
      * @param string $focus Focus
      * @param boolean $showtabs Display tabs yes/no
      * @return void
-     **/
-    function header($cm, $course, $pagemenu, $currenttab = 'view', $focus = '', $showtabs = true) {
-        global $CFG, $USER, $PAGE, $OUTPUT;
+     */
+    public function header($cm, $course, $pagemenu, $currenttab = 'view', $focus = '', $showtabs = true) {
+        global $PAGE, $OUTPUT;
 
-        $strpagemenus = get_string('modulenameplural', 'pagemenu');
-        $strpagemenu  = get_string('modulename', 'pagemenu');
         $strname = format_string($pagemenu->name);
 
-    // Log it!
+        // Log it!
         // Trigger module viewed event.
         $eventparams = array(
             'objectid' => $pagemenu->id,
@@ -59,7 +57,7 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
         $event->add_record_snapshot('pagemenu', $pagemenu);
         $event->trigger();
 
-    // Print header, heading, tabs and messages.
+        // Print header, heading, tabs and messages.
         $url = new moodle_url('/mod/pagemenu/view.php', array('id' => $cm->id));
         $context = context_module::instance($cm->id);
         $PAGE->set_url($url);
@@ -84,12 +82,11 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
      *
      * @return void
      */
-    function tabs($cm, $currenttab) {
-        global $CFG;
-    
+    public function tabs($cm, $currenttab) {
+
         if (has_capability('mod/pagemenu:manage', context_module::instance($cm->id))) {
             $tabs = $row = $inactive = array();
-    
+
             $taburl = new moodle_url('/mod/pagemenu/view.php', array('id' => $cm->id));
             $row[] = new tabobject('view', $taburl, get_string('view', 'pagemenu'));
             $taburl = new moodle_url('/mod/pagemenu/edit.php', array('id' => $cm->id));
@@ -111,7 +108,7 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
      * @uses $SESSION
      * @return boolean
      */
-    function messages() {
+    public function messages() {
         global $SESSION, $OUTPUT;
 
         $str = '';
@@ -120,8 +117,8 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
             // No messages to print.
             return $str;
         }
-    
-        foreach($SESSION->messages as $message) {
+
+        foreach ($SESSION->messages as $message) {
             $str .= $OUTPUT->notification($message[0], $message[1]);
         }
 
@@ -142,14 +139,15 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
      * @param array $data All of the data for the links used by this menu
      * @param array $firstlinkids This is an array of IDs that are the first link for a pagemenu.  Array keys are pagemenu IDs.
      * @return mixed
-     **/
-    function build_menu($pagemenuid, $editing = false, $yui = false, $menuinfo = false, $links = NULL, $data = NULL, $firstlinkids = array()) {
+     */
+    public function build_menu($pagemenuid, $editing = false, $yui = false, $menuinfo = false,
+        $links = null, $data = null, $firstlinkids = array()) {
         global $CFG, $OUTPUT, $DB;
 
-        $info            = new stdClass;
-        $info->html      = '';
+        $info = new stdClass;
+        $info->html = '';
         $info->menuitems = array();
-        $info->active    = false;
+        $info->active = false;
 
         // Set links if not already passed.
         if ($links === null) {
@@ -175,7 +173,8 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
                 if ($action == 'move') {
                     $moveid = required_param('linkid', PARAM_INT);
                     $alt = get_string('movehere');
-                    $params = array('a' => $pagemenuid, 'action' => 'movehere', 'linkid' => $moveid, 'sesskey' => sesskey(), 'after' => '%d');
+                    $params = array('a' => $pagemenuid, 'action' => 'movehere', 'linkid' => $moveid, 
+                        'sesskey' => sesskey(), 'after' => '%d');
                     $moveurl = new moodle_url('/mod/pagemenu/edit.php', $params);
                     $movewidget = '<a title="'.$alt.'" href="'.$moveurl.'">'.
                                   '<img src="'.$OUTPUT->pix_url('movehere').'" alt="'.$alt.'" /></a>';
@@ -184,25 +183,28 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
                     $move = false;
                 }
 
-                $table              = new html_table();
-                $table->id          = 'edit-table';
-                $table->class       = 'generaltable';
-                $table->width       = '90%';
+                $table = new html_table();
+                $table->id = 'edit-table';
+                $table->class = 'generaltable';
+                $table->width = '90%';
                 $table->tablealign  = 'center';
                 $table->cellpadding = '5px';
                 $table->cellspacing = '0';
-                $table->data        = array();
+                $table->data = array();
 
                 if ($move) {
-                    $table->head  = array(get_string('movingcancel', 'pagemenu', "$CFG->wwwroot/mod/pagemenu/edit.php?a=$pagemenuid"));
-                    $table->wrap  = array('nowrap');
+                    $editurl = new moodle_url('/mod/pagemenu/edit.php', array('a' => $pagemenuid));
+                    $table->head = array(get_string('movingcancel', 'pagemenu', $editurl));
+                    $table->wrap = array('nowrap');
                     $table->data[] = array(sprintf($movewidget, 0));
-
                 } else {
-                    $table->head  = array(get_string('linktype', 'pagemenu'), get_string('actions', 'pagemenu'), get_string('rendered', 'pagemenu'));
+                    $linktypestr = get_string('linktype', 'pagemenu');
+                    $actionsstr = get_string('actions', 'pagemenu');
+                    $renderedstr = get_string('rendered', 'pagemenu');
+                    $table->head = array($linktypestr, $actionsstr, $renderedstr);
                     $table->align = array('left', 'center', '');
-                    $table->size  = array('*', '*', '100%');
-                    $table->wrap  = array('nowrap', 'nowrap', 'nowrap');
+                    $table->size = array('*', '*', '100%');
+                    $table->wrap = array('nowrap', 'nowrap', 'nowrap');
                 }
             }
 
@@ -213,9 +215,9 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
                     $datum = null;
                 }
 
-                $link     = $links[$linkid];
-                $linkid   = $link->nextid;
-                $link     = mod_pagemenu_link::factory($link->type, $link, $datum);
+                $link = $links[$linkid];
+                $linkid = $link->nextid;
+                $link = mod_pagemenu_link::factory($link->type, $link, $datum);
                 $menuitem = $link->get_menuitem($editing, $yui);
 
                 // Update info.
@@ -244,10 +246,12 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
                         foreach (array('move', 'edit', 'delete') as $widget) {
                             $alt = s(get_string($widget));
 
-                            $params = array('a' => $pagemenuid, 'action' => $widget, 'linkid' => $link->link->id, 'sesskey' => sesskey());
+                            $params = array('a' => $pagemenuid, 'action' => $widget,
+                                'linkid' => $link->link->id, 'sesskey' => sesskey());
                             $itemurl = new moodle_url('/mod/pagemenu/edit.php', $params);
+                            $pixurl = $OUTPUT->pix_url("t/$widget");
                             $widgets[] = '<a title="'.$alt.'" href="'.$itemurl.'">'.
-                                         "<img src=\"".$OUTPUT->pix_url("t/$widget")."\" height=\"11\" width=\"11\" border=\"0\" alt=\"$alt\" /></a>";
+                                '<img src="'.$pixurl.'" height="11" width="11" border="0" alt="'.$alt.'" /></a>';
                         }
 
                         $table->data[] = array($link->get_name(), implode('&nbsp;', $widgets), $html);
@@ -263,7 +267,8 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
                 $info->html .= $OUTPUT->box_end();
             }
         } else {
-            $info->html = $OUTPUT->box(get_string('nolinksinmenu', 'pagemenu'), 'generalbox boxaligncenter boxwidthnarrow centerpara', 'pagemenu-empty');
+            $classes = 'generalbox boxaligncenter boxwidthnarrow centerpara';
+            $info->html = $OUTPUT->box(get_string('nolinksinmenu', 'pagemenu'), $classes, 'pagemenu-empty');
         }
 
         if ($menuinfo) {
@@ -281,17 +286,17 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
      * @param boolean $yui Add extra HTML and classes to support YUI menu
      * @return string
      */
-    function menuitems($menuitems, $depth = 0, $yui = false) {
+    public function menuitems($menuitems, $depth = 0, $yui = false) {
         // Don't return anything for empty menus.
         if (empty($menuitems)) {
             return '';
         }
 
-        $html  = '';
+        $html = '';
         $first = true;
-        $last  = false;
+        $last = false;
         $count = 1;
-        $end   = count($menuitems);
+        $end = count($menuitems);
 
         foreach ($menuitems as $menuitem) {
             if ($count == $end) {
@@ -299,7 +304,7 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
             }
             $item = $this->a($menuitem, $yui);
             if ($menuitem->childtree) {
-                $item .= $this->menuitems($menuitem->childtree, $depth+1, $yui);
+                $item .= $this->menuitems($menuitem->childtree, $depth + 1, $yui);
             }
             $html .= $this->li($item, $depth, $menuitem->active, $first, $last, $yui);
 
@@ -320,7 +325,7 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
      * @param boolean $yui Add extra HTML and classes to support YUI menu
      * @return string
      */
-    function ul($html, $depth, $yui = false) {
+    public function ul($html, $depth, $yui = false) {
         if ($depth == 0) {
             $class = 'menutree';
         } else {
@@ -331,14 +336,14 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
 
         if ($yui) {
             if ($depth != 0) {
-                // Cannot have this div on root list
+                // Cannot have this div on root list.
                 $output .= '<div class="yuimenu">';
             }
             $output .= '<div class="bd">';
-            $class   = pagemenu_prefix_class_names($class);
+            $class = pagemenu_prefix_class_names($class);
         }
 
-        $output .= "<ul class=\"$class\">$html</ul>";
+        $output .= '<ul class="'.$class.'">'.$html.'</ul>';
 
         if ($yui) {
             $output .= '</div>';
@@ -362,7 +367,7 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
      * @param boolean $yui Add extra HTML and classes to support YUI menu
      * @return string
      */
-    function li($html, $depth, $first, $last, $yui = false) {
+    public function li($html, $depth, $first, $last, $yui = false) {
         $class = "menuitem depth$depth";
 
         if ($last) {
@@ -385,7 +390,7 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
      * @param boolean $yui Add extra HTML and classes to support YUI menu
      * @return string
      */
-    function a($menuitem, $yui = false) {
+    public function a($menuitem, $yui = false) {
         $menuitem->class .= ' menuitemlabel';
 
         if ($menuitem->active) {
@@ -397,6 +402,7 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
 
         $title = s($menuitem->title);
 
-        return $menuitem->pre.'<a href="'.$menuitem->url.'" title="'.$title.'" onclick="this.target=\'_top\'" class="'.$menuitem->class.'">'.$title.'</a>'.$menuitem->post;
+        return $menuitem->pre.'<a href="'.$menuitem->url.'" title="'.$title.'"
+            onclick="this.target=\'_top\'" class="'.$menuitem->class.'">'.$title.'</a>'.$menuitem->post;
     }
 }

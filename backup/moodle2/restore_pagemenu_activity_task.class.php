@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package moodlecore
+ * @package mod_pagemenu
  * @subpackage backup-moodle2
  * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -24,7 +23,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/mod/pagemenu/backup/moodle2/restore_pagemenu_stepslib.php'); // Because it exists (must)
+require_once($CFG->dirroot.'/mod/pagemenu/backup/moodle2/restore_pagemenu_stepslib.php'); // Because it exists (must).
 
 /**
  * pagemenu restore task that provides all the settings and steps to perform one
@@ -36,14 +35,14 @@ class restore_pagemenu_activity_task extends restore_activity_task {
      * Define (add) particular settings this activity can have
      */
     protected function define_my_settings() {
-        // No particular settings for this activity
+        // No particular settings for this activity.
     }
 
     /**
      * Define (add) particular steps this activity can have
      */
     protected function define_my_steps() {
-        // Choice only has one structure step
+        // Choice only has one structure step.
         $this->add_step(new restore_pagemenu_activity_structure_step('pagemenu_structure', 'pagemenu.xml'));
     }
 
@@ -66,9 +65,9 @@ class restore_pagemenu_activity_task extends restore_activity_task {
     static public function define_decode_rules() {
         $rules = array();
 
-        // List of pagemenus in course
+        // List of pagemenus in course.
         $rules[] = new restore_decode_rule('PAGEMENUINDEX', '/mod/pagemenu/index.php?id=$1', 'course');
-        // pagemenu by cm->id and pagemenu->id
+        // Pagemenu by cm->id and pagemenu->id.
         $rules[] = new restore_decode_rule('PAGEMENUVIEWBYID', '/mod/pagemenu/view.php?id=$1', 'course_module');
         $rules[] = new restore_decode_rule('PAGEMENUVIEWBYINSTANCE', '/mod/pagemenu/view.php?p=$1', 'pagemenu');
 
@@ -108,36 +107,6 @@ class restore_pagemenu_activity_task extends restore_activity_task {
 
         return $rules;
     }
-
-    /*
-    * We need to a posteriori remap some possible module links and recode next/previous fields in links
-    *
-    */
-    /*
-    public function after_restore(){
-        global $DB;
-
-        $pagemenuid = $this->get_activityid();
-
-        if ($modulelinks = $DB->get_records('pagemenu_links', array('pagemenuid' => $pagemenuid))){
-            foreach ($modulelinks as $ml) {
-
-                $ml->previd = $this->get_mappingid('pagemenu_links', $ml->previd);
-                $ml->nextid = $this->get_mappingid('pagemenu_links', $ml->nextid);
-
-                if ($ml->type == 'module'){
-                    if ($link = $DB->get_record('pagemenu_link_data', array('linkid' => $ml->id))){
-                        $link->value = $this->get_mappingid('course_module', $link->value);
-                        $DB->update_record('pagemenu_link_data', $link);
-                    } else {
-                        $this->get_logger()->process("Failed to restore dependency for pagemenu link '$ml->name'. ", backup::LOG_ERROR);                
-                    }
-                }
-                $DB->update_record('pagemenu_links', $ml);
-            }
-        }
-    }
-    */
 
     /**
      * Return the new id of a mapping for the given itemname
