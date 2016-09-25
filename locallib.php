@@ -25,9 +25,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
- * Get the base link class, almost always used
- */
 require_once($CFG->dirroot.'/mod/pagemenu/link_base.class.php');
 require_once($CFG->dirroot.'/mod/pagemenu/classes/event/course_module_viewed.php');
 
@@ -47,7 +44,7 @@ function pagemenu_get_links() {
  */
 function pagemenu_get_link_classes() {
     $return = array();
-    foreach(pagemenu_get_links() as $type) {
+    foreach (pagemenu_get_links() as $type) {
         $return[$type] = mod_pagemenu_link::factory($type);
     }
     return $return;
@@ -156,7 +153,7 @@ function pagemenu_append_link($link, $previd = null) {
     if ($previd !== null) {
         $link->previd = $previd;
     } else if ($lastid = pagemenu_get_last_linkid($link->pagemenuid)) {
-        // Add new one after
+        // Add new one after.
         $link->previd = $lastid;
     } else {
         $link->previd = 0; // Just make sure.
@@ -355,7 +352,7 @@ function pagemenu_get_link_data($links) {
     if (!empty($links)) {
         $idlist = implode(',', array_keys($links));
         if ($data = $DB->get_records_select('pagemenu_link_data', " linkid IN ($idlist) ", array())) {
-    
+
             foreach ($data as $datum) {
                 if (!array_key_exists($datum->linkid, $organized)) {
                     $organized[$datum->linkid] = array();
