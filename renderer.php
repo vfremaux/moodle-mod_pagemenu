@@ -133,11 +133,12 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
      *
      * @param int $pagemenuid ID of the instance to print
      * @param boolean $editing True if your currently editing the menu
-     * @param boolean $yui Turn YUI Menu support On/Off - If On, then extra divs and classes will be added and full trees are printed
+     * @param boolean $yui Turn YUI Menu support On/Off - If On, then extra divs and classes will
+     * be added and full trees are printed
      * @param boolean $menuinfo True, returns menu information object.  False, return menu HTML
      * @param array $links All of the links used by this menu
      * @param array $data All of the data for the links used by this menu
-     * @param array $firstlinkids This is an array of IDs that are the first link for a pagemenu.  Array keys are pagemenu IDs.
+     * @param array $firstlinkids This is an array of IDs that are the first link for a pagemenu. Array keys are pagemenu IDs.
      * @return mixed
      */
     public function build_menu($pagemenuid, $editing = false, $yui = false, $menuinfo = false,
@@ -173,7 +174,7 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
                 if ($action == 'move') {
                     $moveid = required_param('linkid', PARAM_INT);
                     $alt = get_string('movehere');
-                    $params = array('a' => $pagemenuid, 'action' => 'movehere', 'linkid' => $moveid, 
+                    $params = array('a' => $pagemenuid, 'action' => 'movehere', 'linkid' => $moveid,
                         'sesskey' => sesskey(), 'after' => '%d');
                     $moveurl = new moodle_url('/mod/pagemenu/edit.php', $params);
                     $movewidget = '<a title="'.$alt.'" href="'.$moveurl.'">'.
