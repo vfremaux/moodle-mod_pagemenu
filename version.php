@@ -17,21 +17,21 @@
 /**
  * Version details.
  *
- * @package     mod_pagemenu
- * @category    mod
- * @author      Valery Fremaux (valery.fremaux@gmeil.com)
- * @copyright   2011 onwards Valery Fremaux (valery.fremaux@gmeil.com)
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    mod_pagemenu
+ * @category   mod
+ * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright  (C) 2014  Valery Fremaux (valery.fremaux@gmail.com)
+ * @licence    http://www.gnu.org/copyleft/gpl.html GNU Public Licence
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2015111100;  // The current module version (Date: YYYYMMDDXX)
-$plugin->requires = 2015111100;  // Requires this Moodle version
+$plugin->version  = 2014030800;  // The current module version (Date: YYYYMMDDXX)
+$plugin->requires = 2016052300;  // Requires this Moodle version
 $plugin->component = 'mod_pagemenu';  // Name of component
 $plugin->maturity = MATURITY_RC;
-$plugin->release = "3.0.0 (Build 2015111100)";
+$plugin->release = "3.1.0 (Build 2014030800)";
 $plugin->dependencies = array('format_page' => 2013012900);
 
-// Non Moodle attributes.
-$plugin->codeincrement = '3.0.0000';
+// Non moodle attributes.
+$plugin->codeincrement = '3.1.0000';
