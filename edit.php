@@ -56,13 +56,13 @@ if (!empty($action)) {
 }
 
 /*
- * Create the editing form which has dual purpose - add new 
+ * Create the editing form which has dual purpose - add new
  * links of any type or edit a single link of any type
  */
-$mform = new mod_pagemenu_edit_form(NULL, $link);
+$mform = new mod_pagemenu_edit_form(null, $link);
 
 if ($mform->is_cancelled()) {
-    redirect("$CFG->wwwroot/mod/pagemenu/edit.php?id=$cm->id");
+    redirect(new moodle_url('/mod/pagemenu/edit.php', array('id' => $cm->id)));
 
 } else if ($data = $mform->get_data()) {
     // Save form data.
@@ -70,7 +70,7 @@ if ($mform->is_cancelled()) {
         $link->save($data);
     }
     pagemenu_set_message(get_string('menuupdated', 'pagemenu'), 'notifysuccess');
-    redirect("$CFG->wwwroot/mod/pagemenu/edit.php?id=$cm->id");
+    redirect(new moodle_url('/mod/pagemenu/edit.php', array('id' => $cm->id)));
 
 } else if (!empty($linkaction)) {
     /*

@@ -22,13 +22,13 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package pagemenu
  * @author moodle 2.x valery.fremaux valery.fremaux@gmail.com
- **/
+ */
 
-require_once('moodleform_mod.php');
+defined('MOODLE_INTERNAL') || die();
 
 class mod_pagemenu_mod_form extends moodleform_mod {
 
-    function definition() {
+    public function definition() {
         $mform =& $this->_form;
 
         // Our general settings.
@@ -59,14 +59,13 @@ class mod_pagemenu_mod_form extends moodleform_mod {
         $this->add_action_buttons();
     }
 
-    function definition_after_data() {
+    public function definition_after_data() {
         $mform =& $this->_form;
 
         // Once form is submitted, check to make sure our checkboxes are set to something.
         if ($this->is_submitted()) {
             $values = &$mform->_submitValues;
 
-            // foreach (array('useastab', 'displayname') as $key) {
             foreach (array('displayname') as $key) {
                 if (!isset($values[$key])) {
                     $values[$key] = 0;

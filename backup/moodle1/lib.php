@@ -63,25 +63,20 @@ class moodle1_mod_pagemenu_handler extends moodle1_mod_handler {
             ),
             new convert_path(
                 'pagemenu_links', '/MOODLE_BACKUP/COURSE/MODULES/MOD/PAGEMENU/LINKS',
-                array(
-                )
+                array()
             ),
             new convert_path(
                 'pagemenu_link', '/MOODLE_BACKUP/COURSE/MODULES/MOD/PAGEMENU/LINKS/LINK',
-                array(
-                )
+                array()
             ),
             new convert_path(
                 'pagemenu_link_data', '/MOODLE_BACKUP/COURSE/MODULES/MOD/PAGEMENU/LINKS/LINK/DATA',
-                array(
-                )
+                array()
             ),
             new convert_path(
                 'pagemenu_link_datum', '/MOODLE_BACKUP/COURSE/MODULES/MOD/PAGEMENU/LINKS/LINK/DATA/DATUM',
-                array(
-                )
-            ),
-       );
+                array()
+        ));
     }
 
     /**

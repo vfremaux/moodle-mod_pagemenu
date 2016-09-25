@@ -23,7 +23,7 @@
  * @author Mark Nielsen
  * @version $Id: index.php,v 1.1 2010/03/03 15:30:09 vf Exp $
  * @package pagemenu
- **/
+ */
 
 require_once('../../config.php');
 require_once($CFG->dirroot.'/mod/pagemenu/locallib.php');
@@ -78,7 +78,7 @@ foreach ($pagemenus as $pagemenu) {
     $context = context_module::instance($pagemenu->coursemodule);
 
     if (!$pagemenu->visible) {
-        // Show dimmed if the mod is hidden
+        // Show dimmed if the mod is hidden.
         $class = ' class="dimmed"';
     }
 
@@ -103,7 +103,10 @@ foreach ($pagemenus as $pagemenu) {
 
 if ($addheaders) {
     // Has mod/pagemenu:manage in at least one of the instances, so show 3 columns instead of 1.
-    $table->head = array_merge($table->head, array(get_string('displayname', 'pagemenu'), get_string('useastab', 'pagemenu'), get_string('taborder', 'pagemenu')));
+    $displaynamestr = get_string('displayname', 'pagemenu');
+    $useastabstr = get_string('useastab', 'pagemenu');
+    $taborderstr = get_string('taborder', 'pagemenu');
+    $table->head = array_merge($table->head, array($displaynamestr, $useastabstr, $taborderstr));
 
     // Add padding to those rows that the user does not have mod/pagemenu:manage cap.
     $cols = count($table->head);
@@ -118,5 +121,5 @@ if (!empty($table->data)) {
     echo html_writer::table($table);
     echo $OUTPUT->footer($course);
 } else {
-    notice("There are no pagemenus", "$CFG->wwwroot/course/view.php?id=$course->id");
+    echo $OUTPUT->notification("There are no pagemenus", new moodle_url('/course/view.php', array('id' => $course->id)));
 }

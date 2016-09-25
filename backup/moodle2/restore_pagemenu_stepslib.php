@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -41,11 +40,13 @@ class restore_pagemenu_activity_structure_step extends restore_activity_structur
         $paths[] = new restore_path_element('pagemenu', '/activity/pagemenu');
         $paths[] = new restore_path_element('link', '/activity/pagemenu/links/link');
         $paths[] = new restore_path_element('link_data', '/activity/pagemenu/links/link/data/datum');
+        /*
         if ($userinfo) {
-            // no user info
+            // No user info.
         }
+        */
 
-        // Return the paths wrapped into standard activity structure
+        // Return the paths wrapped into standard activity structure.
         return $this->prepare_activity_structure($paths);
     }
 
@@ -53,7 +54,6 @@ class restore_pagemenu_activity_structure_step extends restore_activity_structur
         global $DB;
 
         $data = (object)$data;
-        $oldid = $data->id;
         $data->course = $this->get_courseid();
 
         $data->timemodified = $this->apply_date_offset($data->timemodified);
@@ -98,28 +98,23 @@ class restore_pagemenu_activity_structure_step extends restore_activity_structur
         global $DB;
 
         $data = (object)$data;
-        $oldid = $data->id;
 
-        // See what needs to be remapped depending on parent's type
+        // See what needs to be remapped depending on parent's type.
         $data->linkid = $this->get_mappingid('pagemenu_links', $data->linkid);
 
         $newitemid = $DB->insert_record('pagemenu_link_data', $data);
-
-        // Probably useless as nothing links to link data.
-        // $this->set_mapping('pagemenu_link_data', $oldid, $newitemid, true);
     }
 
     // We shall have to remap all internal bindings of all generated links.
     protected function after_restore() {
         global $DB, $CFG;
 
-        $conds = array('backupid' => $this->get_restoreid(),
-                       'itemname' => 'pagemenu');
+        $conds = array('backupid' => $this->get_restoreid(), 'itemname' => 'pagemenu');
 
         $mappings = $DB->get_records('backup_ids_temp', $conds);
 
         if ($mappings) {
-            foreach ($mappings as $mapid => $mapping) {
+            foreach ($mappings as $mapping) {
                 if ($alllinks = $DB->get_records('pagemenu_links', array('pagemenuid' => $mapping->newitemid))) {
                     foreach ($alllinks as $link) {
                         // Each link type might remap what it needs.
@@ -149,7 +144,7 @@ class restore_pagemenu_activity_structure_step extends restore_activity_structur
             }
         }
 
-        // Add pagemenu related files, no need to match by itemname (just internally handled context)
+        // Add pagemenu related files, no need to match by itemname (just internally handled context).
         $this->add_related_files('mod_pagemenu', 'intro', null);
     }
 }

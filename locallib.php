@@ -288,7 +288,7 @@ function pagemenu_remove_link_from_ordering($linkid) {
  * @return array
  **/
 function pagemenu_build_menus($pagemenus, $yui = false, $menuinfo = false, $courseid = NULL) {
-    global $COURSE, $PAGE;
+    global $COURSE, $PAGE, $DB;
 
     $renderer = $PAGE->get_renderer('mod_pagemenu');
 
@@ -376,7 +376,6 @@ function pagemenu_get_link_data($links) {
  * @return boolean If return true, then a redirect will occure (in edit.php at least)
  **/
 function pagemenu_handle_edit_action($pagemenu, $action = null) {
-    global $CFG;
 
     if (!confirm_sesskey()) {
         print_error('confirmsesskeybad', 'error');

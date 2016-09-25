@@ -12,24 +12,23 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * Version details.
  *
- * Code fragment to define the version of this module
- * This fragment is called by moodle_needs_upgrading() and /admin/index.php
- *
- * Changes : 
- * - Allows authorized people to see hidden pages in menu as dimmed links
+ * @package     mod_pagemenu
+ * @category    mod
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux (http://www.mylearningfactory.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or late
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2014030800;  // The current module version (Date: YYYYMMDDXX)
-$plugin->requires = 2014042900;  // Requires this Moodle version
-$plugin->component = 'mod_pagemenu';  // Name of component
-$plugin->cron     = 0;           // Period for cron to check this module (secs)
+$plugin->version  = 2014030800;  // The current module version (Date: YYYYMMDDXX).
+$plugin->requires = 2014042900;  // Requires this Moodle version.
+$plugin->component = 'mod_pagemenu';  // Name of component.
 $plugin->maturity = MATURITY_RC;
 $plugin->release = "2.7.0 (Build 2014030800)";
 $plugin->dependencies = array('format_page' => 2013012900);

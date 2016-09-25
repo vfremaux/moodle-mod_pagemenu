@@ -53,10 +53,10 @@ function pagemenu_supports($feature) {
  *
  * @param object $instance An object from the form in mod.html
  * @return int The id of the newly inserted pagemenu record
- **/
+ */
 function pagemenu_add_instance($pagemenu) {
     global $DB;
-    
+
     pagemenu_process_settings($pagemenu);
 
     return $DB->insert_record('pagemenu', $pagemenu);
@@ -69,10 +69,10 @@ function pagemenu_add_instance($pagemenu) {
  *
  * @param object $instance An object from the form in mod.html
  * @return boolean Success/Fail
- **/
+ */
 function pagemenu_update_instance($pagemenu) {
     global $DB;
-    
+
     pagemenu_process_settings($pagemenu);
     $pagemenu->id = $pagemenu->instance;
 
@@ -86,7 +86,7 @@ function pagemenu_update_instance($pagemenu) {
  *
  * @param int $id Id of the module instance
  * @return boolean Success/Failure
- **/
+ */
 function pagemenu_delete_instance($id) {
     global $DB;
 
@@ -121,7 +121,7 @@ function pagemenu_delete_instance($id) {
  * @param mixed $mod Don't know
  * @param object $pagemenu pagemenu instance object
  * @return object
- **/
+ */
 function pagemenu_user_outline($course, $user, $mod, $pagemenu) {
     return false;
 }
@@ -135,7 +135,7 @@ function pagemenu_user_outline($course, $user, $mod, $pagemenu) {
  * @param mixed $mod Don't know
  * @param object $pagemenu pagemenu instance object
  * @return boolean
- **/
+ */
 function pagemenu_user_complete($course, $user, $mod, $pagemenu) {
     return false;
 }
@@ -148,7 +148,7 @@ function pagemenu_user_complete($course, $user, $mod, $pagemenu) {
  * @uses $CFG
  * @return boolean
  * @todo Finish documenting this function
- **/
+ */
 function pagemenu_print_recent_activity($course, $isteacher, $timestart) {
     global $CFG, $USER;
 
@@ -165,7 +165,7 @@ function pagemenu_print_recent_activity($course, $isteacher, $timestart) {
  * @uses $CFG
  * @return boolean
  * @todo Finish documenting this function
- **/
+ */
 function pagemenu_cron () {
     global $CFG;
 
@@ -184,7 +184,7 @@ function pagemenu_cron () {
  *
  * @param int $pagemenuid ID of an instance of this module
  * @return mixed Null or object with an array of grades and with the maximum grade
- **/
+ */
 function pagemenu_grades($pagemenuid) {
    return null;
 }
@@ -197,7 +197,7 @@ function pagemenu_grades($pagemenuid) {
  *
  * @param int $pagemenuid ID of an instance of this module
  * @return mixed boolean/array of students
- **/
+ */
 function pagemenu_get_participants($pagemenuid) {
     return false;
 }
@@ -211,8 +211,8 @@ function pagemenu_get_participants($pagemenuid) {
  * @param int $pagemenuid ID of an instance of this module
  * @return mixed
  * @todo Finish documenting this function
- **/
-function pagemenu_scale_used ($pagemenuid,$scaleid) {
+ */
+function pagemenu_scale_used($pagemenuid,$scaleid) {
     $return = false;
 
     return $return;
@@ -220,7 +220,7 @@ function pagemenu_scale_used ($pagemenuid,$scaleid) {
 
 /**
  *
- **/
+ */
 function pagemenu_scale_used_anywhere($scaleid) {
     return false;
 }
@@ -228,19 +228,19 @@ function pagemenu_scale_used_anywhere($scaleid) {
 /**
  * Any other pagemenu functions go here.  Each of them must have a name that
  * starts with pagemenu_
- **/
+ */
 
 /**
  * General pagemenu Functions
  *
- **/
+ */
 
 /**
  * Processes common settings from {@link pagemenu_update_instance}
  * and {@link pagemenu_add_instance}
  *
  * @return void
- **/
+ */
 function pagemenu_process_settings(&$pagemenu) {
     $pagemenu->timemodified = time();
     $pagemenu->taborder     = round(@$pagemenu->taborder, 0);

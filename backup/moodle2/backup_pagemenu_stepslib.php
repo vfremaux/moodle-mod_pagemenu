@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -33,7 +32,7 @@ class backup_pagemenu_activity_structure_step extends backup_activity_structure_
 
     protected function define_structure() {
 
-        // Define each element separated
+        // Define each element separated.
 
         $pagemenu = new backup_nested_element('pagemenu', array('id'), array('name', 'intro', 'introformat', 'displayname', 'timemodified'));
 
@@ -45,7 +44,7 @@ class backup_pagemenu_activity_structure_step extends backup_activity_structure_
 
         $datum = new backup_nested_element('datum', array('id'), array('linkid', 'name', 'value'));
 
-        // Build the tree
+        // Build the tree.
 
         $pagemenu->add_child($links);
         $links->add_child($link);
@@ -53,18 +52,17 @@ class backup_pagemenu_activity_structure_step extends backup_activity_structure_
         $link->add_child($data);
         $data->add_child($datum);
 
-        // Define sources
+        // Define sources.
 
         $pagemenu->set_source_table('pagemenu', array('id' => backup::VAR_ACTIVITYID));
         $link->set_source_table('pagemenu_links', array('pagemenuid' => backup::VAR_PARENTID));
         $datum->set_source_table('pagemenu_link_data', array('linkid' => backup::VAR_PARENTID));
 
-        // Define file annotations
+        // Define file annotations.
 
-        $pagemenu->annotate_files('mod_pagemenu', 'intro', null); // This file area hasn't itemid
+        $pagemenu->annotate_files('mod_pagemenu', 'intro', null); // This file area hasn't itemid.
 
-        // Return the root element (pagemenu), wrapped into standard activity structure
+        // Return the root element (pagemenu), wrapped into standard activity structure.
         return $this->prepare_activity_structure($pagemenu);
     }
-
 }
