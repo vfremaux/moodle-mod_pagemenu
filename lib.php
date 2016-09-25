@@ -212,7 +212,7 @@ function pagemenu_get_participants($pagemenuid) {
  * @return mixed
  * @todo Finish documenting this function
  */
-function pagemenu_scale_used($pagemenuid,$scaleid) {
+function pagemenu_scale_used($pagemenuid, $scaleid) {
     $return = false;
 
     return $return;

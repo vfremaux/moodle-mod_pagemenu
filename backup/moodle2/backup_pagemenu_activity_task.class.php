@@ -20,7 +20,7 @@
  * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNALE'= || die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/mod/pagemenu/backup/moodle2/backup_pagemenu_stepslib.php'); // Because it exists (must)
 require_once($CFG->dirroot . '/mod/pagemenu/backup/moodle2/backup_pagemenu_settingslib.php'); // Because it exists (optional)
