@@ -156,7 +156,7 @@ function pagemenu_user_complete($course, $user, $mod, $pagemenu) {
  * Return true if there was output, or false is there was none.
  *
  * @uses $CFG
- * @return boolean
+ * @return boolean true if anything was printed, otherwise false
  * @todo Finish documenting this function
  */
 function pagemenu_print_recent_activity($course, $isteacher, $timestart) {
@@ -164,7 +164,7 @@ function pagemenu_print_recent_activity($course, $isteacher, $timestart) {
 
     $printed = false;
 
-    return $printed;  //  True if anything was printed, otherwise false.
+    return $printed;
 }
 
 /**
