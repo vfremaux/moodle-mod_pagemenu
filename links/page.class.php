@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/course/format/page/lib.php');
-require_once($CFG->dirroot.'/course/format/page/page.class.php');
+require_once($CFG->dirroot.'/course/format/page/classes/page.class.php');
 require_once($CFG->dirroot.'/mod/pagemenu/link_base.class.php');
 
 /**

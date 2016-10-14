@@ -299,11 +299,14 @@ function pagemenu_build_menus($pagemenus, $yui = false, $menuinfo = false, $cour
     $canviewhidden = has_capability('moodle/course:viewhiddenactivities', context_course::instance($courseid));
 
     // Load all the context instances at once.
-    $instances = context_module::instance(array_keys($pagemenus));
+    $instances = array();
+    foreach (array_keys($pagemenus) as $cmid) {
+        $instances[$cmid] = context_module::instance($cmid);
+    }
 
     $pagemenuids = array();
     foreach ($pagemenus as $pagemenu) {
-        if (has_capability('mod/pagemenu:view', $instances[$pagemenu->id]) and ($pagemenu->visible or $canviewhidden)) {
+        if (has_capability('mod/pagemenu:view', $instances[$pagemenu->id]) && ($pagemenu->visible or $canviewhidden)) {
             $pagemenuids[$pagemenu->id] = $pagemenu->instance;
         }
     }
@@ -314,7 +317,7 @@ function pagemenu_build_menus($pagemenus, $yui = false, $menuinfo = false, $cour
     }
 
     // Start fetching links and link data for ALL of the menus.
-    if (!$links = $DB->get_records_list('pagemenu_links', array('pagemenuid' => implode(',', $pagemenuids)))) {
+    if (!$links = $DB->get_records_list('pagemenu_links', 'pagemenuid', $pagemenuids)) {
         // None of the menus have links...
         return false;
     }
