@@ -31,7 +31,7 @@ $plugin->requires = 2014042900;  // Requires this Moodle version.
 $plugin->component = 'mod_pagemenu';  // Name of component.
 $plugin->maturity = MATURITY_RC;
 $plugin->release = "2.7.0 (Build 2014030800)";
-$plugin->dependencies = array('format_page' => 2013012900);
+$plugin->dependencies = array('format_page' => 2016071203);
 
 // Non moodle attributes.
-$plugin->codeincrement = '2.7.0000';
+$plugin->codeincrement = '2.7.0001';
