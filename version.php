@@ -26,12 +26,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2014030800;  // The current module version (Date: YYYYMMDDXX).
+$plugin->version  = 2015111100;  // The current module version (Date: YYYYMMDDXX).
 $plugin->requires = 2016052300;  // Requires this Moodle version.
 $plugin->component = 'mod_pagemenu';  // Name of component.
 $plugin->maturity = MATURITY_RC;
-$plugin->release = "3.1.0 (Build 2014030800)";
+$plugin->release = "3.2.0 (Build 2014030800)";
 $plugin->dependencies = array('format_page' => 2016071203);
 
 // Non moodle attributes.
-$plugin->codeincrement = '3.1.0000';
+$plugin->codeincrement = '3.2.0001';
