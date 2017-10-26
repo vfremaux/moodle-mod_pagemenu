@@ -26,7 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2014030800;  // The current module version (Date: YYYYMMDDXX).
+$plugin->version  = 2015111100;  // The current module version (Date: YYYYMMDDXX).
 $plugin->requires = 2015111000;  // Requires this Moodle version.
 $plugin->component = 'mod_pagemenu';  // Name of component.
 $plugin->maturity = MATURITY_RC;
