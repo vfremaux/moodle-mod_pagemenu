@@ -68,6 +68,8 @@ function pagemenu_add_instance($pagemenu) {
     global $DB;
 
     pagemenu_process_settings($pagemenu);
+    $pagemenu->intro = '';
+    $pagemenu->introformat = 0;
 
     return $DB->insert_record('pagemenu', $pagemenu);
 }
