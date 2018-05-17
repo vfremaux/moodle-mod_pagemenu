@@ -159,8 +159,8 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             $params = array('a' => $this->link->pagemenuid, 'linkid' => $this->link->id,
                 'linkaction' => 'page', 'pageid' => $page->id, 'showhide' => $pix, 'sesskey' => sesskey());
             $editurl = new moodle_url('/mod/pagemenu/edit.php', $params);
-            $widget = '<a href="'.$editurl.'">
-                       <img src="'.$OUTPUT->pix_url("t/$pix").'" alt="'.$alt.'" /></a>&nbsp;';
+            $pix = $OUTPUT->pix_icon("t/$pix", $alt);
+            $widget = '<a href="'.$editurl.'">'.$pix.'</a>&nbsp;';
         } else if ($this->is_excluded($page)) {
             // Excluded.
             return false;
@@ -201,8 +201,8 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             $menuitem->class .= " parent $active";
 
             if (!$this->yui) {  // YUI has its own image.
-                $pixurl = $OUTPUT->pix_url($active, 'pagemenu');
-                $menuitem->post = '&nbsp;<img class="'.$active.'" src="'.$pixurl.'" alt="'.get_string($active, 'pagemenu').'" />';
+                $pix = $OUTPUT->pix_icon($active, get_string($active, 'pagemenu'), 'pagemenu', array('class' => $active));
+                $menuitem->post = '&nbsp;'.$pix;
             }
         }
 
