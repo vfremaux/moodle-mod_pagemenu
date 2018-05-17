@@ -162,7 +162,7 @@ class mod_pagemenu_link_page extends mod_pagemenu_link {
             $widget = '<a href="'.$editurl.'">
                        <img src="'.$OUTPUT->pix_url("t/$pix").'" alt="'.$alt.'" /></a>&nbsp;';
         } else if ($this->is_excluded($page)) {
-            // Excluded
+            // Excluded.
             return false;
         }
 
