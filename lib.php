@@ -24,6 +24,14 @@
  **/
 
 /**
+ * This function is not implemented in this plugin, but is needed to mark
+ * the vf documentation custom volume availability.
+ */
+function mod_pagemenu_supports_feature() {
+    assert(1);
+}
+
+/**
  * List of features supported in pagemenu module
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed True if module supports feature, false if not, null if doesn't know
@@ -68,8 +76,11 @@ function pagemenu_add_instance($pagemenu) {
     global $DB;
 
     pagemenu_process_settings($pagemenu);
-    $pagemenu->intro = '';
-    $pagemenu->introformat = 0;
+
+    if (!isset($pagemenu->intro)) {
+        $pagemenu->intro = '';
+        $pagemenu->introformat = FORMAT_HTML;
+    }
 
     return $DB->insert_record('pagemenu', $pagemenu);
 }
