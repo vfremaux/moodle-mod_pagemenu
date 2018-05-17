@@ -177,8 +177,7 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
                     $params = array('a' => $pagemenuid, 'action' => 'movehere', 'linkid' => $moveid,
                         'sesskey' => sesskey(), 'after' => '%d');
                     $moveurl = new moodle_url('/mod/pagemenu/edit.php', $params);
-                    $movewidget = '<a title="'.$alt.'" href="'.$moveurl.'">'.
-                                  '<img src="'.$OUTPUT->pix_url('movehere').'" alt="'.$alt.'" /></a>';
+                    $movewidget = '<a title="'.$alt.'" href="'.$moveurl.'">'.$OUTPUT->pix_icon('movehere', $alt, 'core').'</a>';
                     $move = true;
                 } else {
                     $move = false;
@@ -250,9 +249,8 @@ class mod_pagemenu_renderer extends plugin_renderer_base {
                             $params = array('a' => $pagemenuid, 'action' => $widget,
                                 'linkid' => $link->link->id, 'sesskey' => sesskey());
                             $itemurl = new moodle_url('/mod/pagemenu/edit.php', $params);
-                            $pixurl = $OUTPUT->pix_url("t/$widget");
-                            $widgets[] = '<a title="'.$alt.'" href="'.$itemurl.'">'.
-                                '<img src="'.$pixurl.'" height="11" width="11" border="0" alt="'.$alt.'" /></a>';
+                            $pixurl = $OUTPUT->pix_icon("t/$widget", $alt);
+                            $widgets[] = '<a href="'.$itemurl.'">'.$pix.'</a>';
                         }
 
                         $table->data[] = array($link->get_name(), implode('&nbsp;', $widgets), $html);
