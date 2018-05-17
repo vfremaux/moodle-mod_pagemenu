@@ -24,7 +24,12 @@
  * @author moodle 2.x valery.fremaux valery.fremaux@gmail.com
  */
 
-defined('MOODLE_INTERNAL') || die();
+//It must be included from a Moodle page
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');
+}
+
+require_once($CFG->dirroot.'/course/moodleform_mod.php');
 
 class mod_pagemenu_mod_form extends moodleform_mod {
 
